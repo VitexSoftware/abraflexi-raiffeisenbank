@@ -1,0 +1,10 @@
+.DS_Store
+config.php
+import.csv
+output.xml
+/nbproject/private/
+/nbproject/
+.phpdoc
+/.phpunit.result.cache
+.env
+/RAIFF_MULTIFLEXI.p12

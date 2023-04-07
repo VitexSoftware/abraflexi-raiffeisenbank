@@ -1,0 +1,30 @@
+{
+    "name": "vitexsoftware/abraflexi-raiffeisenbank",
+    "description": "raiffeisenbank  account statement downloader for AbraFlexi",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Vítězslav Dvořák",
+            "email": "info@vitexsoftware.cz"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "spojenet/flexibee": "main-dev",
+        "vitexsoftware/rbczpremiumapi": "dev-main"
+    },
+    "autoload": {
+        "psr-4": {
+            "AbraFlexi\\RaiffeisenBank\\": "src/AbraFlexi/RaiffeisenBank/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Test\\AbraFlexi\\": "vendor/spojenet/abraflexi/testing/src/AbraFlexi/",
+            "Test\\AbraFlexi\\RaiffeisenBank\\": "tests/AbraFlexi/RaiffeisenBank/"
+        }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9"
+    }
+}
