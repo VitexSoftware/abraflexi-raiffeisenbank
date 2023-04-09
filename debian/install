@@ -1,0 +1,4 @@
+bin/*			usr/bin
+src/*.php		usr/lib/abraflexi-raiffeisenbank/
+src/AbraFlexi/RaiffeisenBank/*.php 	usr/share/abraflexi-raiffeisenbank/RaiffeisenBank
+debian/composer.json	usr/lib/abraflexi-raiffeisenbank/

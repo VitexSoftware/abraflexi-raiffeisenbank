@@ -19,10 +19,18 @@ class Transactor extends \AbraFlexi\Banka
     private $until;
 
     /**
+     * DateTime Formating eg. 2021-08-01T10:00:00.0Z
+     * @var string
+     */
+    public static $dateTimeFormat = 'Y-m-d\\TH:i:s.0\\Z';
+
+    /**
      * 
      * @var \AbraFlexi\RO
      */
     private $bank;
+    private $constantor;
+    private $constSymbols;
 
     /**
      * 
@@ -33,6 +41,8 @@ class Transactor extends \AbraFlexi\Banka
     {
         parent::__construct(null, $options);
         $this->bank = $this->getBank($bankAccount);
+        $this->constantor = new \AbraFlexi\RW(null, ['evidence' => 'konst-symbol']);
+        $this->constSymbols = $this->constantor->getColumnsFromAbraFlexi(['kod'], ['limit' => 0], 'kod');
     }
 
     public function getBank($accountNumber)
@@ -96,12 +106,19 @@ class Transactor extends \AbraFlexi\Banka
                 $this->since = new \DateTime('first day of ' . $scope . ' ' . date('Y'));
                 $this->until = new \DateTime('last day of ' . $scope . ' ' . date('Y'));
                 break;
+            case 'auto':
+                $latestRecord = $this->getColumnsFromAbraFlexi(['id', 'lastUpdate'], ['limit' => 1, 'order' => 'lastUpdate@A', 'source' => $this->sourceString(), 'banka' => $this->bank]);
+                $this->since = $latestRecord[0]['lastUpdate'];
+                $this->until = new \DateTime(); //Now
+                break;
             default:
                 throw new \Exception('Unknown scope ' . $scope);
                 break;
         }
-        $this->since = $this->since->setTime(0, 0);
-        $this->until = $this->until->setTime(0, 0);
+        if ($scope != 'auto') {
+            $this->since = $this->since->setTime(0, 0);
+            $this->until = $this->until->setTime(0, 0);
+        }
     }
 
     /**
@@ -114,13 +131,17 @@ class Transactor extends \AbraFlexi\Banka
         $apiInstance = new \VitexSoftware\Raiffeisenbank\PremiumAPI\GetTransactionListApi();
         $page = 1;
         $transactions = [];
+        $this->addStatusMessage(sprintf(_('Request transactions from %s to %s'), $this->since->format(self::$dateTimeFormat), $this->until->format(self::$dateTimeFormat)), 'debug');
         try {
             do {
-                $result = $apiInstance->getTransactionList($this->getxRequestId(), $this->bank->getDataValue('buc'), $this->getCurrencyCode(), $this->since->format('Y-m-d'), $this->until->format('Y-m-d'), $page);
+                $result = $apiInstance->getTransactionList($this->getxRequestId(), $this->bank->getDataValue('buc'), $this->getCurrencyCode(), $this->since->format(self::$dateTimeFormat), $this->until->format(self::$dateTimeFormat), $page);
                 if (empty($result)) {
-                    $this->addStatusMessage(sprintf(_('No transactions from %s to %s'), $this->since, $this->until));
+                    $this->addStatusMessage(sprintf(_('No transactions from %s to %s'), $this->since->format(self::$dateTimeFormat), $this->until->format(self::$dateTimeFormat)));
+                    $result['lastPage'] = true;
                 }
-                $transactions = array_merge($transactions, $result['transactions']);
+                if (array_key_exists('transactions', $result)) {
+                    $transactions = array_merge($transactions, $result['transactions']);
+                }
             } while ($result['lastPage'] === false);
         } catch (Exception $e) {
             echo 'Exception when calling GetTransactionListApi->getTransactionList: ', $e->getMessage(), PHP_EOL;
@@ -128,6 +149,9 @@ class Transactor extends \AbraFlexi\Banka
         return $transactions;
     }
 
+    /**
+     * Import process itself
+     */
     public function import()
     {
         $allMoves = $this->getColumnsFromAbraFlexi('id', ['limit' => 0, 'banka' => $this->bank]);
@@ -137,7 +161,7 @@ class Transactor extends \AbraFlexi\Banka
             $this->dataReset();
             $this->takeTransactionData($transaction);
             try {
-                $this->addStatusMessage('New entry ' . $this->getRecordIdent(), $this->sync() ? 'success' : 'error');
+                $this->addStatusMessage('New entry ' . $this->getRecordIdent() . ' ' . $this->getDataValue('nazFirmy') . ': ' . $this->getDataValue('popis') . ' ' . $this->getDataValue('sumCelkem') . ' ' . $this->getDataValue('mena')->showAs, $this->sync() ? 'success' : 'error');
                 $success++;
             } catch (\AbraFlexi\Exception $exc) {
                 
@@ -167,7 +191,16 @@ class Transactor extends \AbraFlexi\Banka
                 $this->setDataValue('varSym', $transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation->variable);
             }
             if (property_exists($transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation, 'constant')) {
-                $this->setDataValue('konSym', \AbraFlexi\RO::code($transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation->constant));
+                $conSym = $transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation->constant;
+                if (intval($conSym)) {
+                    $conSym = sprintf('%04d', $conSym);
+                    if (!array_key_exists($conSym, $this->constSymbols)) {
+                        $this->constantor->insertToAbraFlexi(['kod' => $conSym, 'poznam' => 'Created by Raiffeisen Bank importer', 'nazev' => '?!?!? ' . $conSym]);
+                        $this->constantor->addStatusMessage('New constant ' . $conSym . ' created in flexibee', 'warning');
+                        $this->constSymbols[$conSym] = $conSym;
+                    }
+                    $this->setDataValue('konSym', \AbraFlexi\RO::code($conSym));
+                }
             }
         }
 
@@ -248,8 +281,18 @@ class Transactor extends \AbraFlexi\Banka
 //        "links": null
 //    },
 
-        $this->setDataValue('source', substr(__FILE__ . '@' . gethostname(), -50));
-        echo $this->getJsonizedData()."\n";
+        $this->setDataValue('source', $this->sourceString());
+//        echo $this->getJsonizedData() . "\n";
+    }
+
+    /**
+     * Source Identifier
+     * 
+     * @return string
+     */
+    public function sourceString()
+    {
+        return substr(__FILE__ . '@' . gethostname(), -50);
     }
 
     /**
