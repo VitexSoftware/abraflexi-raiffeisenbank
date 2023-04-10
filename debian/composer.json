@@ -24,10 +24,6 @@
         },
         {
             "type": "path",
-            "url": "/usr/share/php/EaseHtml"
-        },
-        {
-            "type": "path",
             "url": "/usr/share/php/AbraFlexi"
         },
         {
@@ -39,5 +35,4 @@
             "url": "/usr/share/php/GuzzleHttp"
         }
     ]
-
 }
