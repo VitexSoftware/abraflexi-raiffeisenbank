@@ -8,3 +8,9 @@ output.xml
 /.phpunit.result.cache
 .env
 /RAIFF_MULTIFLEXI.p12
+/debian/debhelper-build-stamp
+/debian/abraflexi-raiffeisenbank.debhelper.log
+/debian/abraflexi-raiffeisenbank/
+/debian/.debhelper/
+/debian/abraflexi-raiffeisenbank.substvars
+/debian/files

@@ -3,7 +3,6 @@
 namespace AbraFlexi\RaiffeisenBank;
 
 require_once( '../vendor/autoload.php');
-
 if (isset($argv[1])) {
     $envFile = $argv[1];
 } else {
@@ -16,6 +15,8 @@ if (isset($argv[1])) {
 \Ease\Shared::init(['ABRAFLEXI_URL', 'ABRAFLEXI_LOGIN', 'ABRAFLEXI_PASSWORD', 'ABRAFLEXI_COMPANY', 'CERT_FILE', 'CERT_PASS', 'XIBMCLIENTID'], $envFile);
 $apiInstance = new \VitexSoftware\Raiffeisenbank\PremiumAPI\GetAccountsApi();
 $x_request_id = time(); // string | Unique request id provided by consumer application for reference and auditing.
+
+Transactor::checkCertificatePresence(\Ease\Functions::cfg('CERT_FILE'));
 
 try {
     $result = $apiInstance->getAccounts($x_request_id);

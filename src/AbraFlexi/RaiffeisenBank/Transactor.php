@@ -33,9 +33,10 @@ class Transactor extends \AbraFlexi\Banka
     private $constSymbols;
 
     /**
+     * Transaction Handler
      * 
-     * @param type $init
-     * @param type $options
+     * @param null $init
+     * @param array $options
      */
     public function __construct($bankAccount, $options = [])
     {
@@ -45,6 +46,25 @@ class Transactor extends \AbraFlexi\Banka
         $this->constSymbols = $this->constantor->getColumnsFromAbraFlexi(['kod'], ['limit' => 0], 'kod');
     }
 
+    /**
+     * Try to check certificate readibilty
+     * 
+     * @param string $certFile path to certificate
+     */
+    public static function checkCertificatePresence($certFile)
+    {
+        if ((file_exists($certFile) === false) || (is_readable($certFile) === false)) {
+            fwrite(STDERR, 'Cannot read specified certificate file: ' . $certFile . PHP_EOL);
+            exit;
+        }
+    }
+
+    /**
+     * 
+     * @param type $accountNumber
+     * @return \AbraFlexi\RO
+     * @throws Exception
+     */
     public function getBank($accountNumber)
     {
         $banker = new \AbraFlexi\RO(null, ['evidence' => 'bankovni-ucet']);
