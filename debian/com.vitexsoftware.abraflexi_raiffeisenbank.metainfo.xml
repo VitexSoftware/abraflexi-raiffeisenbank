@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="console-application">
+  <id>com.vitexsoftware.abraflexi_raiffeisenbank</id>
+  
+  <name>abraflexi-raiffeisenbank</name>
+  <summary>Raiffeisen Bank Transaction puller for AbraFlexi </summary>
+  
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT-Modern-Variant</project_license>
+  
+  <description>
+    <p>
+      Prepare Bank in AbraFlexi and Import Transactions
+    </p>
+  </description>
+  
+  <icon type="stock">abraflexi-raiffeisenbank</icon>
+  
+  <categories>
+    <category>Utility</category>
+    <category>Adult</category>
+  </categories>
+  
+  <provides>
+    <binary>abraflexi-raiffeisenbank-import</binary>
+  </provides>
+</component>

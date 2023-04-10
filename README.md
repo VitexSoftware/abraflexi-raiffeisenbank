@@ -1,12 +1,12 @@
 
-![Logo](project-logo.svg?raw=true)
+![Logo](abraflexi-raiffeisenbank.svg?raw=true)
 
 
 
 Configuration
 -------------
 
-Environment od .env file contents:
+Environment or .env file contents:
 
 ```
 ABRAFLEXI_URL=https://demo.flexibee.eu:5434
