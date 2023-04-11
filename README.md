@@ -1,6 +1,22 @@
 
 ![Logo](abraflexi-raiffeisenbank.svg?raw=true)
 
+Debian/Ubuntu installation
+--------------------------
+
+Please use the .deb packages. The repository is availble:
+
+ ```shell
+    echo "deb http://repo.vitexsoftware.com $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/vitexsoftware.list
+    sudo wget -O /etc/apt/trusted.gpg.d/vitexsoftware.gpg http://repo.vitexsoftware.com/keyring.gpg
+    sudo apt update
+    sudo apt install abraflexi-raiffeisenbank
+```
+
+Po instalaci balíku jsou v systému k dispozici tyto nové příkazy:
+
+  * **abraflexi-raiffeisenbank-setup**    - check and/or prepare Bank account setup in AbraFlexi
+  * **abraflexi-raiffeisenbank-import**   - Import transactions. From latest imported or within the given scope
 
 
 Configuration
