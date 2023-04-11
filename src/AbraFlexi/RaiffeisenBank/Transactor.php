@@ -189,7 +189,7 @@ class Transactor extends \AbraFlexi\Banka
                 
             }
         }
-        $this->addStatusMessage('Import done. ' . $success . ' of ' . count($allTransactions) . ' importred');
+        $this->addStatusMessage('Import done. ' . $success . ' of ' . count($allTransactions) . ' imported');
     }
 
     /**
