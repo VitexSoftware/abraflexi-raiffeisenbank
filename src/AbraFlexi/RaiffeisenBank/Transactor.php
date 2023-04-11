@@ -60,8 +60,9 @@ class Transactor extends \AbraFlexi\Banka
     }
 
     /**
+     * Gives you AbraFlexi Bank 
      * 
-     * @param type $accountNumber
+     * @param STRING $accountNumber
      * 
      * @return \AbraFlexi\RO
      * 
@@ -89,6 +90,14 @@ class Transactor extends \AbraFlexi\Banka
     function setScope($scope)
     {
         switch ($scope) {
+            case 'today':
+                $this->since = (new \DateTime())->setTime(0, 0);
+                $this->until = (new \DateTime())->setTime(23, 59);
+                break;
+            case 'yesterday':
+                $this->since = (new \DateTime('yesterday'))->setTime(0, 0);
+                $this->until = (new \DateTime('yesterday'))->setTime(23, 59);
+                break;
             case 'current_month':
                 $this->since = new \DateTime("first day of this month");
                 $this->until = new \DateTime();
@@ -130,14 +139,19 @@ class Transactor extends \AbraFlexi\Banka
                 break;
             case 'auto':
                 $latestRecord = $this->getColumnsFromAbraFlexi(['id', 'lastUpdate'], ['limit' => 1, 'order' => 'lastUpdate@A', 'source' => $this->sourceString(), 'banka' => $this->bank]);
-                $this->since = $latestRecord[0]['lastUpdate'];
+                if (array_key_exists(0, $latestRecord) && array_key_exists('lastUpdate', $latestRecord[0])) {
+                    $this->since = $latestRecord[0]['lastUpdate'];
+                } else {
+                    $this->addStatusMessage('Previous record for "auto since" not found. Defaulting to today\'s 00:00', 'warning');
+                    $this->since = (new \DateTime())->setTime(0, 0);
+                }
                 $this->until = new \DateTime(); //Now
                 break;
             default:
                 throw new \Exception('Unknown scope ' . $scope);
                 break;
         }
-        if ($scope != 'auto') {
+        if ($scope != 'auto' && $scope != 'today' && $scope != 'yesterday') {
             $this->since = $this->since->setTime(0, 0);
             $this->until = $this->until->setTime(0, 0);
         }
@@ -182,11 +196,15 @@ class Transactor extends \AbraFlexi\Banka
         foreach ($allTransactions as $transaction) {
             $this->dataReset();
             $this->takeTransactionData($transaction);
-            try {
-                $this->addStatusMessage('New entry ' . $this->getRecordIdent() . ' ' . $this->getDataValue('nazFirmy') . ': ' . $this->getDataValue('popis') . ' ' . $this->getDataValue('sumCelkem') . ' ' . $this->getDataValue('mena'), $this->sync() ? 'success' : 'error');
-                $success++;
-            } catch (\AbraFlexi\Exception $exc) {
-                
+            if ($this->checkForTransactionPresence() === false) {
+                try {
+                    $this->addStatusMessage('New entry ' . $this->getRecordIdent() . ' ' . $this->getDataValue('nazFirmy') . ': ' . $this->getDataValue('popis') . ' ' . $this->getDataValue('zklOsv') . ' ' . \AbraFlexi\RO::uncode($this->getDataValue('mena')), $this->sync() ? 'success' : 'error');
+                    $success++;
+                } catch (\AbraFlexi\Exception $exc) {
+                    
+                }
+            } else {
+                $this->addStatusMessage('Record with remoteNumber ' . $this->getDataValue('cisDosle') . ' already present in AbraFlexi', 'warning');
             }
         }
         $this->addStatusMessage('Import done. ' . $success . ' of ' . count($allTransactions) . ' imported');
@@ -199,7 +217,7 @@ class Transactor extends \AbraFlexi\Banka
      */
     public function takeTransactionData($transactionData)
     {
-        $this->setMyKey(\AbraFlexi\RO::code('RB' . $transactionData->entryReference));
+//        $this->setMyKey(\AbraFlexi\RO::code('RB' . $transactionData->entryReference));
         $this->setDataValue('bezPolozek', true);
         $this->setDataValue('typDokl', \AbraFlexi\RO::code(\Ease\Functions::cfg('TYP_DOKLADU', 'STANDARD')));
         $moveTrans = [
@@ -228,14 +246,14 @@ class Transactor extends \AbraFlexi\Banka
 
 
         $this->setDataValue('datVyst', $transactionData->bookingDate);
-        $this->setDataValue('duzpPuv', $transactionData->valueDate);
+        //$this->setDataValue('duzpPuv', $transactionData->valueDate);
         if (property_exists($transactionData->entryDetails->transactionDetails->remittanceInformation, 'originatorMessage')) {
             $this->setDataValue('popis', $transactionData->entryDetails->transactionDetails->remittanceInformation->originatorMessage);
         }
 
-        $this->setDataValue('poznam', 'Import Job ' . \Ease\Functions::cfg('JOB_ID'));
-        $this->setDataValue('sumOsv', $transactionData->amount->value);
-        $this->setDataValue('sumCelkem', $transactionData->amount->value);
+        $this->setDataValue('poznam', 'Import Job ' . \Ease\Functions::cfg('JOB_ID', 'n/a'));
+        $this->setDataValue('sumOsv', abs($transactionData->amount->value));
+        //$this->setDataValue('sumCelkem', abs($transactionData->amount->value));
         $this->setDataValue('stavUzivK', 'stavUziv.nactenoEl');
         if (property_exists($transactionData->entryDetails->transactionDetails->relatedParties, 'counterParty')) {
             if (property_exists($transactionData->entryDetails->transactionDetails->relatedParties->counterParty, 'name')) {
@@ -330,5 +348,15 @@ class Transactor extends \AbraFlexi\Banka
     public function getCurrencyCode()
     {
         return empty($this->bank->getDataValue('mena')->value) ? 'CZK' : \AbraFlexi\RO::uncode($this->bank->getDataValue('mena'));
+    }
+
+    /**
+     * Is Record with current remoteNumber already present in AbraFlexi ?
+     * 
+     * @return bool
+     */
+    public function checkForTransactionPresence()
+    {
+        return !empty($this->getColumnsFromAbraFlexi('id', ['cisDosle' => $this->getDataValue('cisDosle')]));
     }
 }

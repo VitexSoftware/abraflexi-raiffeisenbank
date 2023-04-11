@@ -1,2 +1,0 @@
-#!/bin/bash
-php -f /usr/lib/abraflexi-raiffeisenbank/import.php $1 $2 $3
