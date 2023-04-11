@@ -62,7 +62,9 @@ class Transactor extends \AbraFlexi\Banka
     /**
      * 
      * @param type $accountNumber
+     * 
      * @return \AbraFlexi\RO
+     * 
      * @throws Exception
      */
     public function getBank($accountNumber)
