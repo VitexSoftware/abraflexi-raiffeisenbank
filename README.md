@@ -68,7 +68,7 @@ Import Scopes
   * October
   * November
   * December
-
+  * auto
 
 
 Powered by: https://github.com/VitexSoftware/php-vitexsoftware-rbczpremiumapi

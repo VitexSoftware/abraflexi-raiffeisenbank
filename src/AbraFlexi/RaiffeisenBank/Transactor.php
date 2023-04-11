@@ -183,7 +183,7 @@ class Transactor extends \AbraFlexi\Banka
             $this->dataReset();
             $this->takeTransactionData($transaction);
             try {
-                $this->addStatusMessage('New entry ' . $this->getRecordIdent() . ' ' . $this->getDataValue('nazFirmy') . ': ' . $this->getDataValue('popis') . ' ' . $this->getDataValue('sumCelkem') . ' ' . $this->getDataValue('mena')->showAs, $this->sync() ? 'success' : 'error');
+                $this->addStatusMessage('New entry ' . $this->getRecordIdent() . ' ' . $this->getDataValue('nazFirmy') . ': ' . $this->getDataValue('popis') . ' ' . $this->getDataValue('sumCelkem') . ' ' . $this->getDataValue('mena'), $this->sync() ? 'success' : 'error');
                 $success++;
             } catch (\AbraFlexi\Exception $exc) {
                 
