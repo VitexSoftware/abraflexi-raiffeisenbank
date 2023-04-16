@@ -12,26 +12,8 @@ namespace AbraFlexi\RaiffeisenBank;
  *
  * @author vitex
  */
-class Transactor extends \AbraFlexi\Banka
+class Transactor extends BankClient
 {
-
-    private $since;
-    private $until;
-
-    /**
-     * DateTime Formating eg. 2021-08-01T10:00:00.0Z
-     * @var string
-     */
-    public static $dateTimeFormat = 'Y-m-d\\TH:i:s.0\\Z';
-
-    /**
-     * 
-     * @var \AbraFlexi\RO
-     */
-    private $bank;
-    private $constantor;
-    private $constSymbols;
-
     /**
      * Transaction Handler
      * 
@@ -40,122 +22,9 @@ class Transactor extends \AbraFlexi\Banka
      */
     public function __construct($bankAccount, $options = [])
     {
-        parent::__construct(null, $options);
-        $this->bank = $this->getBank($bankAccount);
-        $this->constantor = new \AbraFlexi\RW(null, ['evidence' => 'konst-symbol']);
-        $this->constSymbols = $this->constantor->getColumnsFromAbraFlexi(['kod'], ['limit' => 0], 'kod');
+        parent::__construct($bankAccount, $options);
     }
-
-    /**
-     * Try to check certificate readibilty
-     * 
-     * @param string $certFile path to certificate
-     */
-    public static function checkCertificatePresence($certFile)
-    {
-        if ((file_exists($certFile) === false) || (is_readable($certFile) === false)) {
-            fwrite(STDERR, 'Cannot read specified certificate file: ' . $certFile . PHP_EOL);
-            exit;
-        }
-    }
-
-    /**
-     * Gives you AbraFlexi Bank 
-     * 
-     * @param STRING $accountNumber
-     * 
-     * @return \AbraFlexi\RO
-     * 
-     * @throws Exception
-     */
-    public function getBank($accountNumber)
-    {
-        $banker = new \AbraFlexi\RO(null, ['evidence' => 'bankovni-ucet']);
-        $candidat = $banker->getColumnsFromAbraFlexi('id', ['buc' => $accountNumber]);
-        if (empty($candidat) || !array_key_exists('id', $candidat[0])) {
-            throw new Exception('Bank account ' . $accountNumber . ' not found in AbraFlexi');
-        } else {
-            $banker->loadFromAbraFlexi($candidat[0]['id']);
-        }
-        return $banker;
-    }
-
-    /**
-     * Prepare processing interval
-     * 
-     * @param string $scope 
-     * 
-     * @throws \Exception
-     */
-    function setScope($scope)
-    {
-        switch ($scope) {
-            case 'today':
-                $this->since = (new \DateTime())->setTime(0, 0);
-                $this->until = (new \DateTime())->setTime(23, 59);
-                break;
-            case 'yesterday':
-                $this->since = (new \DateTime('yesterday'))->setTime(0, 0);
-                $this->until = (new \DateTime('yesterday'))->setTime(23, 59);
-                break;
-            case 'current_month':
-                $this->since = new \DateTime("first day of this month");
-                $this->until = new \DateTime();
-                break;
-            case 'last_month':
-                $this->since = new \DateTime("first day of last month");
-                $this->until = new \DateTime("last day of last month");
-                break;
-            case 'last_two_months':
-                $this->since = (new \DateTime("first day of last month"))->modify('-1 month');
-                $this->until = (new \DateTime("last day of last month"));
-                break;
-            case 'previous_month':
-                $this->since = new \DateTime("first day of -2 month");
-                $this->until = new \DateTime("last day of -2 month");
-                break;
-            case 'two_months_ago':
-                $this->since = new \DateTime("first day of -3 month");
-                $this->until = new \DateTime("last day of -3 month");
-                break;
-            case 'this_year':
-                $this->since = new \DateTime('first day of January ' . date('Y'));
-                $this->until = new \DateTime("last day of December" . date('Y'));
-                break;
-            case 'January':  //1
-            case 'February': //2
-            case 'March':    //3
-            case 'April':    //4
-            case 'May':      //5
-            case 'June':     //6
-            case 'July':     //7
-            case 'August':   //8
-            case 'September'://9
-            case 'October':  //10
-            case 'November': //11
-            case 'December': //12
-                $this->since = new \DateTime('first day of ' . $scope . ' ' . date('Y'));
-                $this->until = new \DateTime('last day of ' . $scope . ' ' . date('Y'));
-                break;
-            case 'auto':
-                $latestRecord = $this->getColumnsFromAbraFlexi(['id', 'lastUpdate'], ['limit' => 1, 'order' => 'lastUpdate@A', 'source' => $this->sourceString(), 'banka' => $this->bank]);
-                if (array_key_exists(0, $latestRecord) && array_key_exists('lastUpdate', $latestRecord[0])) {
-                    $this->since = $latestRecord[0]['lastUpdate'];
-                } else {
-                    $this->addStatusMessage('Previous record for "auto since" not found. Defaulting to today\'s 00:00', 'warning');
-                    $this->since = (new \DateTime())->setTime(0, 0);
-                }
-                $this->until = new \DateTime(); //Now
-                break;
-            default:
-                throw new \Exception('Unknown scope ' . $scope);
-                break;
-        }
-        if ($scope != 'auto' && $scope != 'today' && $scope != 'yesterday') {
-            $this->since = $this->since->setTime(0, 0);
-            $this->until = $this->until->setTime(0, 0);
-        }
-    }
+    
 
     /**
      * Obtain Transactions from RB
@@ -325,30 +194,6 @@ class Transactor extends \AbraFlexi\Banka
 //        echo $this->getJsonizedData() . "\n";
     }
 
-    /**
-     * Source Identifier
-     * 
-     * @return string
-     */
-    public function sourceString()
-    {
-        return substr(__FILE__ . '@' . gethostname(), -50);
-    }
-
-    /**
-     * Request Identifier
-     * 
-     * @return string
-     */
-    public function getxRequestId()
-    {
-        return $this->bank->getDataValue('buc') . time();
-    }
-
-    public function getCurrencyCode()
-    {
-        return empty($this->bank->getDataValue('mena')->value) ? 'CZK' : \AbraFlexi\RO::uncode($this->bank->getDataValue('mena'));
-    }
 
     /**
      * Is Record with current remoteNumber already present in AbraFlexi ?
@@ -359,4 +204,44 @@ class Transactor extends \AbraFlexi\Banka
     {
         return !empty($this->getColumnsFromAbraFlexi('id', ['cisDosle' => $this->getDataValue('cisDosle')]));
     }
+    
+    /**
+     * Prepare processing interval
+     * 
+     * @param string $scope 
+     * 
+     * @throws \Exception
+     */
+    function setScope($scope)
+    {
+        switch ($scope) {
+            case 'today':
+                $this->since = (new \DateTime())->setTime(0, 0);
+                $this->until = (new \DateTime())->setTime(23, 59);
+                break;
+            case 'yesterday':
+                $this->since = (new \DateTime('yesterday'))->setTime(0, 0);
+                $this->until = (new \DateTime('yesterday'))->setTime(23, 59);
+                break;
+            case 'auto':
+                $latestRecord = $this->getColumnsFromAbraFlexi(['id', 'lastUpdate'], ['limit' => 1, 'order' => 'lastUpdate@A', 'source' => $this->sourceString(), 'banka' => $this->bank]);
+                if (array_key_exists(0, $latestRecord) && array_key_exists('lastUpdate', $latestRecord[0])) {
+                    $this->since = $latestRecord[0]['lastUpdate'];
+                } else {
+                    $this->addStatusMessage('Previous record for "auto since" not found. Defaulting to today\'s 00:00', 'warning');
+                    $this->since = (new \DateTime('yesterday'))->setTime(0, 0);
+                }
+                $this->until = (new \DateTime('two days ago'))->setTime(0, 0); //Now
+                break;
+            default:
+                throw new \Exception('Unknown scope ' . $scope);
+                break;
+        }
+        if ($scope != 'auto' && $scope != 'today' && $scope != 'yesterday') {
+            $this->since = $this->since->setTime(0, 0);
+            $this->until = $this->until->setTime(0, 0);
+        }
+    }
+    
+    
 }
