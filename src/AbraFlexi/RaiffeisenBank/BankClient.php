@@ -37,6 +37,12 @@ abstract class BankClient extends \AbraFlexi\Banka
     public static $dateTimeFormat = 'Y-m-d\\TH:i:s.0\\Z';
 
     /**
+     * DateTime Formating eg. 2021-08-01T10:00:00.0Z
+     * @var string
+     */
+    public static $dateFormat = 'Y-m-d';
+
+    /**
      * 
      * @var \AbraFlexi\Banka
      */
@@ -196,4 +202,29 @@ abstract class BankClient extends \AbraFlexi\Banka
     {
         return empty($this->bank->getDataValue('mena')->value) ? 'CZK' : \AbraFlexi\RO::uncode($this->bank->getDataValue('mena'));
     }
+
+    /**
+     * Is Record with current remoteNumber already present in AbraFlexi ?
+     * 
+     * @return bool
+     */
+    public function checkForTransactionPresence()
+    {
+        return !empty($this->getColumnsFromAbraFlexi('id', ['cisDosle' => $this->getDataValue('cisDosle')]));
+    }
+
+    /**
+     * 
+     * @param string $conSym
+     */
+    public function ensureKSExists($conSym)
+    {
+        if (!array_key_exists($conSym, $this->constSymbols)) {
+            $this->constantor->insertToAbraFlexi(['kod' => $conSym, 'poznam' => 'Created by Raiffeisen Bank importer', 'nazev' => '?!?!? ' . $conSym]);
+            $this->constantor->addStatusMessage('New constant ' . $conSym . ' created in flexibee', 'warning');
+            $this->constSymbols[$conSym] = $conSym;
+        }
+    }
+    
+    
 }

@@ -14,3 +14,4 @@ output.xml
 /debian/.debhelper/
 /debian/abraflexi-raiffeisenbank.substvars
 /debian/files
+/statement.xml

@@ -14,6 +14,7 @@ namespace AbraFlexi\RaiffeisenBank;
  */
 class Transactor extends BankClient
 {
+
     /**
      * Transaction Handler
      * 
@@ -24,7 +25,6 @@ class Transactor extends BankClient
     {
         parent::__construct($bankAccount, $options);
     }
-    
 
     /**
      * Obtain Transactions from RB
@@ -103,11 +103,7 @@ class Transactor extends BankClient
                 $conSym = $transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation->constant;
                 if (intval($conSym)) {
                     $conSym = sprintf('%04d', $conSym);
-                    if (!array_key_exists($conSym, $this->constSymbols)) {
-                        $this->constantor->insertToAbraFlexi(['kod' => $conSym, 'poznam' => 'Created by Raiffeisen Bank importer', 'nazev' => '?!?!? ' . $conSym]);
-                        $this->constantor->addStatusMessage('New constant ' . $conSym . ' created in flexibee', 'warning');
-                        $this->constSymbols[$conSym] = $conSym;
-                    }
+                    $this->ensureKSExists($conSym);
                     $this->setDataValue('konSym', \AbraFlexi\RO::code($conSym));
                 }
             }
@@ -194,17 +190,6 @@ class Transactor extends BankClient
 //        echo $this->getJsonizedData() . "\n";
     }
 
-
-    /**
-     * Is Record with current remoteNumber already present in AbraFlexi ?
-     * 
-     * @return bool
-     */
-    public function checkForTransactionPresence()
-    {
-        return !empty($this->getColumnsFromAbraFlexi('id', ['cisDosle' => $this->getDataValue('cisDosle')]));
-    }
-    
     /**
      * Prepare processing interval
      * 
@@ -242,6 +227,4 @@ class Transactor extends BankClient
             $this->until = $this->until->setTime(0, 0);
         }
     }
-    
-    
 }

@@ -24,32 +24,118 @@ class Statementor extends BankClient
     {
         $apiInstance = new \VitexSoftware\Raiffeisenbank\PremiumAPI\GetStatementListApi();
         $page = 1;
-        $transactions = [];
-        $requestBody = new \VitexSoftware\Raiffeisenbank\Model\GetStatementsRequest(['accountNumber'=>$this->bank->getDataValue('buc'),'currency'=> $this->getCurrencyCode(), 'statementLine'=>'MT940', 'dateFrom'=>$this->since->format(self::$dateTimeFormat), 'dateTo'=> $this->until->format(self::$dateTimeFormat) ]);
-       
-        $this->addStatusMessage(sprintf(_('Request statements from %s to %s'), $this->since->format(self::$dateTimeFormat), $this->until->format(self::$dateTimeFormat)), 'debug');
+        $statements = [];
+        $requestBody = new \VitexSoftware\Raiffeisenbank\Model\GetStatementsRequest(['accountNumber' => $this->bank->getDataValue('buc'), 'currency' => $this->getCurrencyCode(), 'statementLine' => 'MAIN', 'dateFrom' => $this->since->format(self::$dateFormat), 'dateTo' => $this->until->format(self::$dateFormat)]);
+        $this->addStatusMessage(sprintf(_('Request statements from %s to %s'), $this->since->format(self::$dateFormat), $this->until->format(self::$dateFormat)), 'debug');
         try {
             do {
-                $result = $apiInstance->getStatements($this->getxRequestId(), $requestBody,  $page);
+                $result = $apiInstance->getStatements($this->getxRequestId(), $requestBody, $page);
                 if (empty($result)) {
-                    $this->addStatusMessage(sprintf(_('No transactions from %s to %s'), $this->since->format(self::$dateTimeFormat), $this->until->format(self::$dateTimeFormat)));
+                    $this->addStatusMessage(sprintf(_('No transactions from %s to %s'), $this->since->format(self::$dateFormat), $this->until->format(self::$dateFormat)));
                     $result['lastPage'] = true;
                 }
-                if (array_key_exists('transactions', $result)) {
-                    $transactions = array_merge($transactions, $result['transactions']);
+                if (array_key_exists('statements', $result)) {
+                    $statements = array_merge($statements, $result['statements']);
                 }
-            } while ($result['lastPage'] === false);
+            } while ($result['last'] === false);
         } catch (Exception $e) {
             echo 'Exception when calling GetTransactionListApi->getTransactionList: ', $e->getMessage(), PHP_EOL;
         }
-        return $transactions;
+        return $statements;
     }
-    
+
     public function import()
     {
         $statements = $this->getStatements();
-        print_r($statements);
+        if ($statements) {
+            $apiInstance = new \VitexSoftware\Raiffeisenbank\PremiumAPI\DownloadStatementApi();
+            $success = 0;
+            foreach ($statements as $statement) {
+                $requestBody = new \VitexSoftware\Raiffeisenbank\Model\DownloadStatementRequest(['accountNumber' => $this->bank->getDataValue('buc'), 'currency' => $this->getCurrencyCode(), 'statementId' => $statement->statementId, 'statementFormat' => 'xml']);
+                $xmlStatementRaw = $apiInstance->downloadStatement($this->getxRequestId(), 'cs', $requestBody);
+                $statementXML = new \SimpleXMLElement($xmlStatementRaw);
+                foreach ($statementXML->BkToCstmrStmt->Stmt->Ntry as $ntry) {
+                    $this->dataReset();
+                    $this->ntryToAbraFlexi($ntry);
+                    $this->setDataValue('vypisCisDokl', $statementXML->BkToCstmrStmt->Stmt->Id);
+                    $this->setDataValue('cisSouhrnne', $statementXML->BkToCstmrStmt->Stmt->LglSeqNb);
+                    if ($this->checkForTransactionPresence() === false) {
+                        try {
+                            $this->addStatusMessage('New entry ' . $this->getRecordIdent() . ' ' . $this->getDataValue('nazFirmy') . ': ' . $this->getDataValue('popis') . ' ' . $this->getDataValue('sumOsv') . ' ' . \AbraFlexi\RO::uncode($this->getDataValue('mena')), $this->sync() ? 'success' : 'error');
+                            $success++;
+                        } catch (\AbraFlexi\Exception $exc) {
+                            
+                        }
+                    } else {
+                        $this->addStatusMessage('Record with remoteNumber ' . $this->getDataValue('cisDosle') . ' already present in AbraFlexi', 'warning');
+                    }
+                }
+                $this->addStatusMessage('Import done. ' . $success . ' of ' . count($statements) . ' imported');
+            }
+        }
     }
+
+    /**
+     * Parse Ntry element into \AbraFlexi\Banka data
+     * 
+     * @param SimpleXMLElement $ntry
+     * 
+     * @return array
+     */
+    public function ntryToAbraFlexi($ntry)
+    {
+        $this->setDataValue('typDokl', \AbraFlexi\RO::code(\Ease\Functions::cfg('TYP_DOKLADU', 'STANDARD')));
+        $this->setDataValue('bezPolozek', true);
+        $this->setDataValue('stavUzivK', 'stavUziv.nactenoEl');
+        $this->setDataValue('poznam', 'Import Job ' . \Ease\Functions::cfg('JOB_ID', 'n/a'));
+        if (trim($ntry->CdtDbtInd) == 'CRDT') {
+            $this->setDataValue('rada', \AbraFlexi\RO::code('BANKA+'));
+        } else {
+            $this->setDataValue('rada', \AbraFlexi\RO::code('BANKA-'));
+        }
+
+        $moveTrans = ['DBIT' => 'typPohybu.vydej', 'CRDT' => 'typPohybu.prijem'];
+        $this->setDataValue('typPohybuK', $moveTrans[trim($ntry->CdtDbtInd)]);
+        $this->setDataValue('cisDosle', strval($ntry->NtryRef));
+        $this->setDataValue('datVyst', \AbraFlexi\RO::dateToFlexiDate(new \DateTime($ntry->BookgDt->DtTm)));
+        $this->setDataValue('sumOsv', abs($ntry->Amt));
+        $this->setDataValue('banka', $this->bank);
+        $this->setDataValue('mena', \AbraFlexi\RO::code($ntry->Amt->attributes()->Ccy));
+        if (property_exists($ntry, 'NtryDtls')) {
+
+            if (property_exists($ntry->NtryDtls, 'TxDtls')) {
+
+                $conSym = $ntry->NtryDtls->TxDtls->Refs->InstrId;
+                if (intval($conSym)) {
+                    $conSym = sprintf('%04d', $conSym);
+                    $this->ensureKSExists($conSym);
+                    $this->setDataValue('konSym', \AbraFlexi\RO::code($conSym));
+                }
+
+                if (property_exists($ntry->NtryDtls->TxDtls->Refs, 'EndToEndId')) {
+                    $this->setDataValue('varSym', $ntry->NtryDtls->TxDtls->Refs->EndToEndId);
+                }
+                $transactionData['popis'] = $ntry->NtryDtls->TxDtls->AddtlTxInf;
+                if (property_exists($ntry->NtryDtls->TxDtls, 'RltdPties')) {
+                    if (property_exists($ntry->NtryDtls->TxDtls->RltdPties, 'DbtrAcct')) {
+                        $this->setDataValue('buc', $ntry->NtryDtls->TxDtls->RltdPties->DbtrAcct->Id->Othr->Id);
+                    }
+                    $this->setDataValue('nazFirmy', $ntry->NtryDtls->TxDtls->RltdPties->DbtrAcct->Nm);
+                }
+
+                if (property_exists($ntry->NtryDtls->TxDtls, 'RltdAgts')) {
+
+                    if (property_exists($ntry->NtryDtls->TxDtls->RltdAgts->DbtrAgt, 'FinInstnId')) {
+                        $this->setDataValue('smerKod', \AbraFlexi\RO::code($ntry->NtryDtls->TxDtls->RltdAgts->DbtrAgt->FinInstnId->Othr->Id));
+                    }
+                }
+            }
+        }
+
+        $this->setDataValue('source', $this->sourceString());
+        return $transactionData;
+    }
+
     /**
      * Prepare processing interval
      * 
@@ -122,5 +208,4 @@ class Statementor extends BankClient
             $this->until = $this->until->setTime(0, 0);
         }
     }
-    
 }
