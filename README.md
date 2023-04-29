@@ -16,6 +16,7 @@ Please use the .deb packages. The repository is availble:
 Po instalaci balíku jsou v systému k dispozici tyto nové příkazy:
 
   * **abraflexi-raiffeisenbank-setup**        - check and/or prepare Bank account setup in AbraFlexi
+  * **raiffeisenbank-balance**                - print accounts balance as json to stdout
   * **abraflexi-raiffeisenbank-transactions** - Import transactions. From latest imported or within the given scope
   * **abraflexi-raiffeisenbank-statements**   - Import transactions from Account Statements.
 
@@ -36,6 +37,7 @@ CERT_PASS=test12345678
 XIBMCLIENTID=FbboLD2r1WHDRcuKS4wWUbSRHxlDloWX
 ACCOUNT_NUMBER=12324567
 JOB_ID=xxx
+STATEMENT_LINE=MAIN|ADDITIONAL
 ```
 
 
