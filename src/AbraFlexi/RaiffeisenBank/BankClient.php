@@ -51,7 +51,7 @@ abstract class BankClient extends \AbraFlexi\Banka
     /**
      * Transaction Handler
      * 
-     * @param null $init
+     * @param string $bankAccount Account Number
      * @param array $options
      */
     public function __construct($bankAccount, $options = [])
@@ -99,7 +99,7 @@ abstract class BankClient extends \AbraFlexi\Banka
         $banker = new \AbraFlexi\RO(null, ['evidence' => 'bankovni-ucet']);
         $candidat = $banker->getColumnsFromAbraFlexi('id', ['buc' => $accountNumber]);
         if (empty($candidat) || !array_key_exists('id', $candidat[0])) {
-            throw new Exception('Bank account ' . $accountNumber . ' not found in AbraFlexi');
+            throw new \Exception('Bank account ' . $accountNumber . ' not found in AbraFlexi');
         } else {
             $banker->loadFromAbraFlexi($candidat[0]['id']);
         }
@@ -224,6 +224,27 @@ abstract class BankClient extends \AbraFlexi\Banka
             $this->constantor->addStatusMessage('New constant ' . $conSym . ' created in flexibee', 'warning');
             $this->constSymbols[$conSym] = $conSym;
         }
+    }
+    /**
+     * 
+     * @param int $success
+     * 
+     * @return int
+     */
+    public function insertTransactionToAbraFlexi($success)
+    {
+        if ($this->checkForTransactionPresence() === false) {
+            try {
+                $result = $this->sync();
+            } catch (\AbraFlexi\Exception $exc) {
+                
+            }
+            $this->addStatusMessage('New entry ' . $this->getRecordIdent() . ' ' . $this->getDataValue('nazFirmy') . ': ' . $this->getDataValue('popis') . ' ' . $this->getDataValue('sumOsv') . ' ' . \AbraFlexi\RO::uncode($this->getDataValue('mena')), $result ? 'success' : 'error');
+            $success++;
+        } else {
+            $this->addStatusMessage('Record with remoteNumber ' . $this->getDataValue('cisDosle') . ' already present in AbraFlexi', 'warning');
+        }
+        return $success;
     }
     
     

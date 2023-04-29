@@ -65,16 +65,7 @@ class Transactor extends BankClient
         foreach ($allTransactions as $transaction) {
             $this->dataReset();
             $this->takeTransactionData($transaction);
-            if ($this->checkForTransactionPresence() === false) {
-                try {
-                    $this->addStatusMessage('New entry ' . $this->getRecordIdent() . ' ' . $this->getDataValue('nazFirmy') . ': ' . $this->getDataValue('popis') . ' ' . $this->getDataValue('zklOsv') . ' ' . \AbraFlexi\RO::uncode($this->getDataValue('mena')), $this->sync() ? 'success' : 'error');
-                    $success++;
-                } catch (\AbraFlexi\Exception $exc) {
-                    
-                }
-            } else {
-                $this->addStatusMessage('Record with remoteNumber ' . $this->getDataValue('cisDosle') . ' already present in AbraFlexi', 'warning');
-            }
+            $success = $this->insertTransactionToAbraFlexi($success);
         }
         $this->addStatusMessage('Import done. ' . $success . ' of ' . count($allTransactions) . ' imported');
     }

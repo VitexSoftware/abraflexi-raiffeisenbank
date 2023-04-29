@@ -825,12 +825,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Spoje-NET/php-abraflexi.git",
-                "reference": "866a63d6a780ff79b0fe3801d1aa57eab1eb5acf"
+                "reference": "d209a638744c8f14f1c9a6f447c0846999bdd4c6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Spoje-NET/php-abraflexi/zipball/866a63d6a780ff79b0fe3801d1aa57eab1eb5acf",
-                "reference": "866a63d6a780ff79b0fe3801d1aa57eab1eb5acf",
+                "url": "https://api.github.com/repos/Spoje-NET/php-abraflexi/zipball/d209a638744c8f14f1c9a6f447c0846999bdd4c6",
+                "reference": "d209a638744c8f14f1c9a6f447c0846999bdd4c6",
                 "shasum": ""
             },
             "require": {
@@ -845,8 +845,8 @@
             },
             "require-dev": {
                 "ext-iconv": "*",
-                "phing/phing": "^2",
-                "phpunit/phpunit": "^9"
+                "phing/phing": "*",
+                "phpunit/phpunit": "*"
             },
             "default-branch": true,
             "type": "library",
@@ -876,7 +876,7 @@
                 "issues": "https://github.com/Spoje-NET/php-abraflexi/issues",
                 "source": "https://github.com/Spoje-NET/php-abraflexi/tree/main"
             },
-            "time": "2023-04-18T11:43:02+00:00"
+            "time": "2023-04-29T11:49:33+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -951,12 +951,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/VitexSoftware/php-ease-core.git",
-                "reference": "0baa32451d513aba8535ae2ac0b1d040f2e8ab17"
+                "reference": "c953d56e459a12ee1c71569676d5b28a4c79f5eb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/VitexSoftware/php-ease-core/zipball/0baa32451d513aba8535ae2ac0b1d040f2e8ab17",
-                "reference": "0baa32451d513aba8535ae2ac0b1d040f2e8ab17",
+                "url": "https://api.github.com/repos/VitexSoftware/php-ease-core/zipball/c953d56e459a12ee1c71569676d5b28a4c79f5eb",
+                "reference": "c953d56e459a12ee1c71569676d5b28a4c79f5eb",
                 "shasum": ""
             },
             "require": {
@@ -996,7 +996,7 @@
             "homepage": "http://v.s.cz/ease.php",
             "support": {
                 "issues": "https://github.com/VitexSoftware/php-ease-core/issues",
-                "source": "https://github.com/VitexSoftware/php-ease-core/tree/main"
+                "source": "https://github.com/VitexSoftware/php-ease-core/tree/1.38.0"
             },
             "funding": [
                 {
@@ -1004,7 +1004,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2023-04-11T10:58:58+00:00"
+            "time": "2023-04-29T18:04:25+00:00"
         },
         {
             "name": "vitexsoftware/rbczpremiumapi",

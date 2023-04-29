@@ -59,16 +59,7 @@ class Statementor extends BankClient
                     $this->ntryToAbraFlexi($ntry);
                     $this->setDataValue('vypisCisDokl', $statementXML->BkToCstmrStmt->Stmt->Id);
                     $this->setDataValue('cisSouhrnne', $statementXML->BkToCstmrStmt->Stmt->LglSeqNb);
-                    if ($this->checkForTransactionPresence() === false) {
-                        try {
-                            $this->addStatusMessage('New entry ' . $this->getRecordIdent() . ' ' . $this->getDataValue('nazFirmy') . ': ' . $this->getDataValue('popis') . ' ' . $this->getDataValue('sumOsv') . ' ' . \AbraFlexi\RO::uncode($this->getDataValue('mena')), $this->sync() ? 'success' : 'error');
-                            $success++;
-                        } catch (\AbraFlexi\Exception $exc) {
-                            
-                        }
-                    } else {
-                        $this->addStatusMessage('Record with remoteNumber ' . $this->getDataValue('cisDosle') . ' already present in AbraFlexi', 'warning');
-                    }
+                    $success = $this->insertTransactionToAbraFlexi($success);
                 }
                 $this->addStatusMessage('Import done. ' . $success . ' of ' . count($statements) . ' imported');
             }
