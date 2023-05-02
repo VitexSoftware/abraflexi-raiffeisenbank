@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * RaiffeisenBank - Transaction importer
+ *
+ * @author     Vítězslav Dvořák <info@vitexsoftware.com>
+ * @copyright  (C) 2023 Spoje.Net
+ */
+
 namespace AbraFlexi\RaiffeisenBank;
 
 require_once( '../vendor/autoload.php');
@@ -11,5 +18,3 @@ Transactor::checkCertificatePresence(\Ease\Functions::cfg('CERT_FILE'));
 $engine = new Transactor(\Ease\Functions::cfg('ACCOUNT_NUMBER'));
 $engine->setScope(\Ease\Functions::cfg('TRANSACTION_IMPORT_SCOPE', 'yesterday'));
 $engine->import();
-
-

@@ -1,5 +1,12 @@
 <?php
 
+/**
+ * RaiffeisenBank - Balance.
+ *
+ * @author     Vítězslav Dvořák <info@vitexsoftware.com>
+ * @copyright  (C) 2023 Spoje.Net
+ */
+
 namespace AbraFlexi\RaiffeisenBank;
 
 require_once( '../vendor/autoload.php');

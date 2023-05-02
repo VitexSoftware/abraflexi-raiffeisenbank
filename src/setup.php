@@ -1,9 +1,15 @@
 <?php
 
+/**
+ * RaiffeisenBank - Inital setup.
+ *
+ * @author     Vítězslav Dvořák <info@vitexsoftware.com>
+ * @copyright  (C) 2023 Spoje.Net
+ */
+
 namespace AbraFlexi\RaiffeisenBank;
 
 require_once( '../vendor/autoload.php');
-
 /**
  * Get List of bank accounts and import it into AbraFlexi
  */
@@ -12,7 +18,6 @@ $apiInstance = new \VitexSoftware\Raiffeisenbank\PremiumAPI\GetAccountsApi();
 $x_request_id = time(); // string | Unique request id provided by consumer application for reference and auditing.
 
 Transactor::checkCertificatePresence(\Ease\Functions::cfg('CERT_FILE'));
-
 try {
     $result = $apiInstance->getAccounts($x_request_id);
     if (array_key_exists('accounts', $result)) {

@@ -1,8 +1,10 @@
 <?php
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/PHPClass.php to edit this template
+/**
+ * RaiffeisenBank - Statements handler class
+ *
+ * @author     Vítězslav Dvořák <info@vitexsoftware.com>
+ * @copyright  (C) 2023 Spoje.Net
  */
 
 namespace AbraFlexi\RaiffeisenBank;
@@ -25,7 +27,7 @@ class Statementor extends BankClient
         $apiInstance = new \VitexSoftware\Raiffeisenbank\PremiumAPI\GetStatementListApi();
         $page = 1;
         $statements = [];
-        $requestBody = new \VitexSoftware\Raiffeisenbank\Model\GetStatementsRequest(['accountNumber' => $this->bank->getDataValue('buc'), 'currency' => $this->getCurrencyCode(), 'statementLine' => \Ease\Functions::cfg('STATEMENT_LINE','MAIN') , 'dateFrom' => $this->since->format(self::$dateFormat), 'dateTo' => $this->until->format(self::$dateFormat)]);
+        $requestBody = new \VitexSoftware\Raiffeisenbank\Model\GetStatementsRequest(['accountNumber' => $this->bank->getDataValue('buc'), 'currency' => $this->getCurrencyCode(), 'statementLine' => \Ease\Functions::cfg('STATEMENT_LINE', 'MAIN'), 'dateFrom' => $this->since->format(self::$dateFormat), 'dateTo' => $this->until->format(self::$dateFormat)]);
         $this->addStatusMessage(sprintf(_('Request statements from %s to %s'), $this->since->format(self::$dateFormat), $this->until->format(self::$dateFormat)), 'debug');
         try {
             do {

@@ -1,14 +1,16 @@
 <?php
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/PHPClass.php to edit this template
+/**
+ * RaiffeisenBank - Transaction handler class.
+ *
+ * @author     Vítězslav Dvořák <info@vitexsoftware.com>
+ * @copyright  (C) 2023 Spoje.Net
  */
 
 namespace AbraFlexi\RaiffeisenBank;
 
 /**
- * Description of newPHPClass
+ * Handle bank transactions
  *
  * @author vitex
  */
@@ -59,7 +61,7 @@ class Transactor extends BankClient
      */
     public function import()
     {
-        $allMoves = $this->getColumnsFromAbraFlexi('id', ['limit' => 0, 'banka' => $this->bank]);
+//        $allMoves = $this->getColumnsFromAbraFlexi('id', ['limit' => 0, 'banka' => $this->bank]);
         $allTransactions = $this->getTransactions();
         $success = 0;
         foreach ($allTransactions as $transaction) {
@@ -197,7 +199,7 @@ class Transactor extends BankClient
                 break;
             case 'yesterday':
                 $this->since = (new \DateTime('yesterday'))->setTime(0, 0);
-                $this->until = (new \DateTime('yesterday'))->setTime(23, 59);
+                $this->until = (new \DateTime('yesterday'))->setTime(23, 59, 59, 999);
                 break;
             case 'auto':
                 $latestRecord = $this->getColumnsFromAbraFlexi(['id', 'lastUpdate'], ['limit' => 1, 'order' => 'lastUpdate@A', 'source' => $this->sourceString(), 'banka' => $this->bank]);

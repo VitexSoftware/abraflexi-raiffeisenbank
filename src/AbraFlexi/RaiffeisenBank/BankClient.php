@@ -1,8 +1,10 @@
 <?php
 
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Scripting/PHPClass.php to edit this template
+/**
+ * RaiffeisenBank - BankClient class
+ *
+ * @author     Vítězslav Dvořák <info@vitexsoftware.com>
+ * @copyright  (C) 2023 Spoje.Net
  */
 
 namespace AbraFlexi\RaiffeisenBank;
@@ -225,6 +227,7 @@ abstract class BankClient extends \AbraFlexi\Banka
             $this->constSymbols[$conSym] = $conSym;
         }
     }
+
     /**
      * 
      * @param int $success
@@ -246,6 +249,4 @@ abstract class BankClient extends \AbraFlexi\Banka
         }
         return $success;
     }
-    
-    
 }
