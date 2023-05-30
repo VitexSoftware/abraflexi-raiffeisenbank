@@ -1,4 +1,4 @@
-abraflexi-raiffeisenbank (1.1) UNRELEASED; urgency=low
+abraflexi-raiffeisenbank (1.1.1) UNRELEASED; urgency=low
 
   [ Vítězslav Dvořák ]
   * Initial release. Closes: #nnnn
@@ -7,4 +7,7 @@ abraflexi-raiffeisenbank (1.1) UNRELEASED; urgency=low
   [ vitex ]
   * Statements puller and balance check added
 
- -- vitex <info@vitexsoftware.cz>  Sat, 29 Apr 2023 21:27:23 +0200
+  [  ]
+  * do not crash when transaction does not contain creditDebitIndication
+
+ --  <vitezslav.dvorak@spojenet.cz>  Tue, 30 May 2023 22:47:01 +0200

@@ -66,8 +66,12 @@ class Transactor extends BankClient
         $success = 0;
         foreach ($allTransactions as $transaction) {
             $this->dataReset();
-            $this->takeTransactionData($transaction);
-            $success = $this->insertTransactionToAbraFlexi($success);
+            if(property_exists($transaction,'creditDebitIndication')){
+                $this->takeTransactionData($transaction);
+                $success = $this->insertTransactionToAbraFlexi($success);
+            } else {
+                $this->addStatusMessage('Skipping transaction without creditDebitIndication', 'warning');
+            }
         }
         $this->addStatusMessage('Import done. ' . $success . ' of ' . count($allTransactions) . ' imported');
     }
