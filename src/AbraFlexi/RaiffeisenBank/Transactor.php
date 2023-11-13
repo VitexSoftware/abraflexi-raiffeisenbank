@@ -20,7 +20,7 @@ class Transactor extends BankClient
     /**
      * Transaction Handler
      * 
-     * @param null $init
+     * @param string $bankAccount
      * @param array $options
      */
     public function __construct($bankAccount, $options = [])

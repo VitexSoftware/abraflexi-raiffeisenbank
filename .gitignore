@@ -16,4 +16,10 @@ output.xml
 /debian/files
 /statement.xml
 /vendor/
+/debian/multiflexi-abraflexi-raiffeisenbank/
+/debian/multiflexi-abraflexi-raiffeisenbank.debhelper.log
+/debian/multiflexi-abraflexi-raiffeisenbank.substvars
+
+
+
 

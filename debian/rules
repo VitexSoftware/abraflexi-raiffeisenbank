@@ -11,3 +11,5 @@
 override_dh_install:
 	dh_install
 	sed -i "s/\.\.\/vendor/\/var\/lib\/composer\/abraflexi-raiffeisenbank/g" debian/abraflexi-raiffeisenbank/usr/lib/abraflexi-raiffeisenbank/*.php
+	sed -i -e 's/..\/.env//'                                                 debian/abraflexi-raiffeisenbank/usr/lib/abraflexi-raiffeisenbank/*.php
+

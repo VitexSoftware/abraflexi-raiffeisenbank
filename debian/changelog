@@ -1,4 +1,4 @@
-abraflexi-raiffeisenbank (1.1.1) UNRELEASED; urgency=low
+abraflexi-raiffeisenbank (1.1.2) UNRELEASED; urgency=low
 
   [ Vítězslav Dvořák ]
   * Initial release. Closes: #nnnn
@@ -10,4 +10,7 @@ abraflexi-raiffeisenbank (1.1.1) UNRELEASED; urgency=low
   [  ]
   * do not crash when transaction does not contain creditDebitIndication
 
- --  <vitezslav.dvorak@spojenet.cz>  Tue, 30 May 2023 22:47:01 +0200
+  [  ]
+  * MultiFlexi package added
+
+ --  <vitezslav.dvorak@spojenet.cz>  Mon, 13 Nov 2023 20:11:04 +0100
