@@ -14,23 +14,30 @@ namespace AbraFlexi\RaiffeisenBank;
  *
  * @author vitex
  */
-class Statementor extends BankClient
-{
+class Statementor extends BankClient {
 
     /**
      * Obtain Transactions from RB
      * 
      * @return array
      */
-    public function getStatements()
-    {
+    public function getStatements() {
         $apiInstance = new \VitexSoftware\Raiffeisenbank\PremiumAPI\GetStatementListApi();
-        $page = 1;
+        $page = 0;
         $statements = [];
-        $requestBody = new \VitexSoftware\Raiffeisenbank\Model\GetStatementsRequest(['accountNumber' => $this->bank->getDataValue('buc'), 'currency' => $this->getCurrencyCode(), 'statementLine' => \Ease\Functions::cfg('STATEMENT_LINE', 'MAIN'), 'dateFrom' => $this->since->format(self::$dateFormat), 'dateTo' => $this->until->format(self::$dateFormat)]);
         $this->addStatusMessage(sprintf(_('Request statements from %s to %s'), $this->since->format(self::$dateFormat), $this->until->format(self::$dateFormat)), 'debug');
+
         try {
             do {
+                $requestBody = new \VitexSoftware\Raiffeisenbank\Model\GetStatementsRequest([
+                    'accountNumber' => $this->bank->getDataValue('buc'),
+                    'page' => ++$page,
+                    'size' => 60,
+                    'currency' => $this->getCurrencyCode(),
+                    'statementLine' => \Ease\Functions::cfg('STATEMENT_LINE', 'MAIN'),
+                    'dateFrom' => $this->since->format(self::$dateFormat),
+                    'dateTo' => $this->until->format(self::$dateFormat)]);
+
                 $result = $apiInstance->getStatements($this->getxRequestId(), $requestBody, $page);
                 if (empty($result)) {
                     $this->addStatusMessage(sprintf(_('No transactions from %s to %s'), $this->since->format(self::$dateFormat), $this->until->format(self::$dateFormat)));
@@ -39,6 +46,7 @@ class Statementor extends BankClient
                 if (array_key_exists('statements', $result)) {
                     $statements = array_merge($statements, $result['statements']);
                 }
+                sleep(1);
             } while ($result['last'] === false);
         } catch (Exception $e) {
             echo 'Exception when calling GetTransactionListApi->getTransactionList: ', $e->getMessage(), PHP_EOL;
@@ -46,14 +54,17 @@ class Statementor extends BankClient
         return $statements;
     }
 
-    public function import()
-    {
+    public function import() {
         $statements = $this->getStatements();
         if ($statements) {
             $apiInstance = new \VitexSoftware\Raiffeisenbank\PremiumAPI\DownloadStatementApi();
             $success = 0;
             foreach ($statements as $statement) {
-                $requestBody = new \VitexSoftware\Raiffeisenbank\Model\DownloadStatementRequest(['accountNumber' => $this->bank->getDataValue('buc'), 'currency' => $this->getCurrencyCode(), 'statementId' => $statement->statementId, 'statementFormat' => 'xml']);
+                $requestBody = new \VitexSoftware\Raiffeisenbank\Model\DownloadStatementRequest([
+                    'accountNumber' => $this->bank->getDataValue('buc'),
+                    'currency' => $this->getCurrencyCode(),
+                    'statementId' => $statement->statementId,
+                    'statementFormat' => 'xml']);
                 $xmlStatementRaw = $apiInstance->downloadStatement($this->getxRequestId(), 'cs', $requestBody);
                 $statementXML = new \SimpleXMLElement($xmlStatementRaw);
                 foreach ($statementXML->BkToCstmrStmt->Stmt->Ntry as $ntry) {
@@ -75,8 +86,7 @@ class Statementor extends BankClient
      * 
      * @return array
      */
-    public function ntryToAbraFlexi($ntry)
-    {
+    public function ntryToAbraFlexi($ntry) {
         $this->setDataValue('typDokl', \AbraFlexi\RO::code(\Ease\Functions::cfg('TYP_DOKLADU', 'STANDARD')));
         $this->setDataValue('bezPolozek', true);
         $this->setDataValue('stavUzivK', 'stavUziv.nactenoEl');
@@ -136,8 +146,7 @@ class Statementor extends BankClient
      * 
      * @throws \Exception
      */
-    function setScope($scope)
-    {
+    function setScope($scope) {
         switch ($scope) {
             case 'yesterday':
                 $this->since = (new \DateTime('yesterday'))->setTime(0, 0);
@@ -199,6 +208,37 @@ class Statementor extends BankClient
         if ($scope != 'auto' && $scope != 'today' && $scope != 'yesterday') {
             $this->since = $this->since->setTime(0, 0);
             $this->until = $this->until->setTime(0, 0);
+        }
+    }
+
+    /**
+     * 
+     * @param string $saveTo
+     */
+    public function download(string $saveTo) {
+        $statements = $this->getStatements();
+        if ($statements) {
+            $apiInstance = new \VitexSoftware\Raiffeisenbank\PremiumAPI\DownloadStatementApi();
+            $success = 0;
+            foreach ($statements as $statement) {
+                $statementFilename = str_replace('/', '_', $statement->statementNumber) . '_' .
+                        $statement->accountNumber . '_' .
+                        $statement->accountId . '_' .
+                        $statement->currency . '_' . $statement->dateFrom . '.pdf';
+                $requestBody = new \VitexSoftware\Raiffeisenbank\Model\DownloadStatementRequest([
+                    'accountNumber' => $this->bank->getDataValue('buc'),
+                    'currency' => $this->getCurrencyCode(),
+                    'statementId' => $statement->statementId,
+                    'statementFormat' => 'pdf']);
+                $pdfStatementRaw = $apiInstance->downloadStatement($this->getxRequestId(), 'cs', $requestBody);
+                sleep(1);
+                if (file_put_contents($saveTo . '/' . $statementFilename, $pdfStatementRaw->fread($pdfStatementRaw->getSize()))) {
+                    $this->addStatusMessage($statementFilename . ' saved', 'success');
+                    unset($pdfStatementRaw);
+                    $success++;
+                }
+            }
+            $this->addStatusMessage('Download done. ' . $success . ' of ' . count($statements) . ' saved');
         }
     }
 }
