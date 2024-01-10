@@ -4,7 +4,7 @@
  * RaiffeisenBank - Statements handler class
  *
  * @author     Vítězslav Dvořák <info@vitexsoftware.com>
- * @copyright  (C) 2023 Spoje.Net
+ * @copyright  (C) 2023-2024 Spoje.Net
  */
 
 namespace AbraFlexi\RaiffeisenBank;
