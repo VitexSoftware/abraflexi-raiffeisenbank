@@ -238,9 +238,10 @@ abstract class BankClient extends \AbraFlexi\Banka
     {
         if ($this->checkForTransactionPresence() === false) {
             try {
+                $this->setDataValue('stredisko', ''); //HOTFIX For [{"message":"Pole 'St\u0159edisko' obsahuje neplatnou polo\u017eku \u010d\u00edseln\u00edku. [B+0001\/2024]","for":"stredisko","path":"banka[temporary-id=null].stredisko","code":"INVALID"}]
                 $result = $this->sync();
             } catch (\AbraFlexi\Exception $exc) {
-                
+                exit(1);
             }
             $this->addStatusMessage('New entry ' . $this->getRecordIdent() . ' ' . $this->getDataValue('nazFirmy') . ': ' . $this->getDataValue('popis') . ' ' . $this->getDataValue('sumOsv') . ' ' . \AbraFlexi\RO::uncode($this->getDataValue('mena')), $result ? 'success' : 'error');
             $success++;

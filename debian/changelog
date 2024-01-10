@@ -1,4 +1,4 @@
-abraflexi-raiffeisenbank (1.1.2) UNRELEASED; urgency=low
+abraflexi-raiffeisenbank (1.1.3) UNRELEASED; urgency=low
 
   [ Vítězslav Dvořák ]
   * Initial release. Closes: #nnnn
@@ -12,5 +12,6 @@ abraflexi-raiffeisenbank (1.1.2) UNRELEASED; urgency=low
 
   [  ]
   * MultiFlexi package added
+  * fix: die with code 1 at record inserting fail
 
- --  <vitezslav.dvorak@spojenet.cz>  Mon, 13 Nov 2023 20:11:04 +0100
+ -- vitex <info@vitexsoftware.cz>  Wed, 10 Jan 2024 19:44:24 +0100
