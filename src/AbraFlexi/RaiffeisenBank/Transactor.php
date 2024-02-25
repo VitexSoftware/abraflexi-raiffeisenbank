@@ -210,8 +210,7 @@ class Transactor extends BankClient
                 if (array_key_exists(0, $latestRecord) && array_key_exists('lastUpdate', $latestRecord[0])) {
                     $this->since = $latestRecord[0]['lastUpdate'];
                 } else {
-                    $this->addStatusMessage('Previous record for "auto since" not found. Defaulting to today\'s 00:00', 'warning');
-                    $this->since = (new \DateTime('yesterday'))->setTime(0, 0);
+                    $this->since = (new \DateTime('89 days ago'))->setTime(0, 0);
                 }
                 $this->until = (new \DateTime('two days ago'))->setTime(0, 0); //Now
                 break;
