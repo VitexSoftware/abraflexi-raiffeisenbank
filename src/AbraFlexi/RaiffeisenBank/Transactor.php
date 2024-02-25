@@ -66,7 +66,7 @@ class Transactor extends BankClient
         $success = 0;
         foreach ($allTransactions as $transaction) {
             $this->dataReset();
-            if(property_exists($transaction,'creditDebitIndication')){
+            if (property_exists($transaction, 'creditDebitIndication')) {
                 $this->takeTransactionData($transaction);
                 $success = $this->insertTransactionToAbraFlexi($success);
             } else {
@@ -92,20 +92,23 @@ class Transactor extends BankClient
         ];
         $this->setDataValue('typPohybuK', $moveTrans[$transactionData->creditDebitIndication]);
         $this->setDataValue('cisDosle', $transactionData->entryReference);
-        if (property_exists($transactionData->entryDetails->transactionDetails->remittanceInformation, 'creditorReferenceInformation')) {
-            if (property_exists($transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation, 'variable')) {
-                $this->setDataValue('varSym', $transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation->variable);
-            }
-            if (property_exists($transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation, 'constant')) {
-                $conSym = $transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation->constant;
-                if (intval($conSym)) {
-                    $conSym = sprintf('%04d', $conSym);
-                    $this->ensureKSExists($conSym);
-                    $this->setDataValue('konSym', \AbraFlexi\RO::code($conSym));
+
+        if (property_exists($transactionData->entryDetails, 'transactionDetails')) {
+
+            if (property_exists($transactionData->entryDetails->transactionDetails, 'remittanceInformation') && property_exists($transactionData->entryDetails->transactionDetails->remittanceInformation, 'creditorReferenceInformation')) {
+                if (property_exists($transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation, 'variable')) {
+                    $this->setDataValue('varSym', $transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation->variable);
+                }
+                if (property_exists($transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation, 'constant')) {
+                    $conSym = $transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation->constant;
+                    if (intval($conSym)) {
+                        $conSym = sprintf('%04d', $conSym);
+                        $this->ensureKSExists($conSym);
+                        $this->setDataValue('konSym', \AbraFlexi\RO::code($conSym));
+                    }
                 }
             }
         }
-
 
         $this->setDataValue('datVyst', $transactionData->bookingDate);
         //$this->setDataValue('duzpPuv', $transactionData->valueDate);
@@ -212,7 +215,7 @@ class Transactor extends BankClient
                 } else {
                     $this->since = (new \DateTime('89 days ago'))->setTime(0, 0);
                 }
-                $this->until = (new \DateTime('two days ago'))->setTime(0, 0); //Now
+                $this->until = (new \DateTime('now'))->setTime(0, 0);
                 break;
             default:
                 throw new \Exception('Unknown scope ' . $scope);
