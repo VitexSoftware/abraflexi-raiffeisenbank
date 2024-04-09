@@ -13,4 +13,4 @@ override_dh_install:
 	dh_install
 	sed -i "s/\.\.\/vendor/\/var\/lib\/composer\/abraflexi-raiffeisenbank/g" debian/abraflexi-raiffeisenbank/usr/lib/abraflexi-raiffeisenbank/*.php
 	sed -i -e 's/..\/.env//'                                                 debian/abraflexi-raiffeisenbank/usr/lib/abraflexi-raiffeisenbank/*.php
-	jq '.version = "'`dpkg-parsechangelog | sed -n 's/^Version: //p'| sed 's/~.*//'`'"'  multiflexi/abraflexi_raiffeisenbank.multiflexi.app.json |sponge debian/multiflexi-raiffeisenbank-statement-downloader/usr/lib/raiffeisenbank-statement-downloader/multiflexi/abraflexi_raiffeisenbank.multiflexi.app.json
+	jq '.version = "'`dpkg-parsechangelog | sed -n 's/^Version: //p'| sed 's/~.*//'`'"'  multiflexi/abraflexi_raiffeisenbank.multiflexi.app.json |sponge debian/multiflexi-abraflexi-raiffeisenbank/usr/lib/raiffeisenbank-statement-downloader/multiflexi/abraflexi_raiffeisenbank.multiflexi.app.json
