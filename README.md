@@ -16,7 +16,6 @@ Please use the .deb packages. The repository is availble:
 Po instalaci balíku jsou v systému k dispozici tyto nové příkazy:
 
   * **abraflexi-raiffeisenbank-setup**        - check and/or prepare Bank account setup in AbraFlexi
-  * **raiffeisenbank-balance**                - print accounts balance as json to stdout
   * **abraflexi-raiffeisenbank-transactions** - Import transactions. From latest imported or within the given scope
   * **abraflexi-raiffeisenbank-statements**   - Import transactions from Account Statements.
 
@@ -43,7 +42,7 @@ STATEMENT_LINE=MAIN|ADDITIONAL
 
 Advanced configuration
 
-```
+```env
 IMPORT_SCOPE=last_month
 EASE_EMAILTO=info@vitexsoftware.cz
 LANG=cs_CZ
@@ -79,3 +78,11 @@ Import Scopes
 
 
 Powered by: https://github.com/VitexSoftware/php-vitexsoftware-rbczpremiumapi
+
+MultiFlexi
+----------
+
+AbraFlexi RaiffeisenBank is ready for run as [MultiFlexi](https://multiflexi.eu) application.
+See the full list of ready-to-run applications within the MultiFlexi platform on the [application list page](https://www.multiflexi.eu/apps.php).
+
+[![MultiFlexi App](https://github.com/VitexSoftware/MultiFlexi/blob/main/doc/multiflexi-app.svg)](https://www.multiflexi.eu/apps.php)
