@@ -83,7 +83,7 @@ abstract class BankClient extends \AbraFlexi\Banka
     {
         if ((file_exists($certFile) === false) || (is_readable($certFile) === false)) {
             fwrite(STDERR, 'Cannot read specified certificate file: ' . $certFile . PHP_EOL);
-            exit;
+            exit(1);
         }
     }
 
