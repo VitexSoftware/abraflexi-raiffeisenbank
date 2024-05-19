@@ -1,2 +1,2 @@
 #!/bin/bash
-php -f /usr/lib/abraflexi-raiffeisenbank/transactions.php $@
+php -f /usr/lib/abraflexi-raiffeisenbank/transactions.php -- $@
