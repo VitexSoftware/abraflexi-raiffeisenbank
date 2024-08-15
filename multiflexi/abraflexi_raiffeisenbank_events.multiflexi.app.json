@@ -5,6 +5,7 @@
     "executable": "abraflexi-raiffeisenbank-events",
     "setup": "abraflexi-raiffeisenbank-setup",
     "cmdparams": "",
+    "uuid": "17ebd2a7-579b-4a79-9435-90ea2c4b2cb6",
     "deploy": "apt install abraflexi-raiffeisenbank",
     "homepage": "https:\/\/github.com\/VitexSoftware\/abraflexi-raiffeisenbank",
     "topics": "RaiffeisenBank, Statements",
