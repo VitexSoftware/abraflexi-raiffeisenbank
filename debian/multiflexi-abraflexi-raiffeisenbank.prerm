@@ -9,6 +9,7 @@ case "$1" in
         do
           multiflexi-json-app-remover $file
         done
+        rm -f /usr/lib/$APPLICATION/multiflexi/
     ;;
 
     upgrade|deconfigure)
