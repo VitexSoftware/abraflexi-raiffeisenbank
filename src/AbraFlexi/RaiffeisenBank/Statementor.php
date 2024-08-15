@@ -214,8 +214,11 @@ class Statementor extends BankClient {
     /**
      * 
      * @param string $saveTo
+     * 
+     * @return string File saved
      */
     public function download(string $saveTo) {
+        $downloaded = null;
         $statements = $this->getStatements();
         if ($statements) {
             $apiInstance = new \VitexSoftware\Raiffeisenbank\PremiumAPI\DownloadStatementApi();
@@ -235,10 +238,12 @@ class Statementor extends BankClient {
                 if (file_put_contents($saveTo . '/' . $statementFilename, $pdfStatementRaw->fread($pdfStatementRaw->getSize()))) {
                     $this->addStatusMessage($statementFilename . ' saved', 'success');
                     unset($pdfStatementRaw);
+                    $downloaded = $saveTo . '/' . $statementFilename;
                     $success++;
                 }
             }
             $this->addStatusMessage('Download done. ' . $success . ' of ' . count($statements) . ' saved');
         }
+        return $downloaded;
     }
 }

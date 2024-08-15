@@ -826,12 +826,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Spoje-NET/php-abraflexi.git",
-                "reference": "a9645301d2543997c616d887fa3491745a563706"
+                "reference": "99d02154e8e2941814ce715fa372f46710966480"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Spoje-NET/php-abraflexi/zipball/a9645301d2543997c616d887fa3491745a563706",
-                "reference": "a9645301d2543997c616d887fa3491745a563706",
+                "url": "https://api.github.com/repos/Spoje-NET/php-abraflexi/zipball/99d02154e8e2941814ce715fa372f46710966480",
+                "reference": "99d02154e8e2941814ce715fa372f46710966480",
                 "shasum": ""
             },
             "require": {
@@ -873,7 +873,7 @@
                 "issues": "https://github.com/Spoje-NET/php-abraflexi/issues",
                 "source": "https://github.com/Spoje-NET/php-abraflexi/tree/main"
             },
-            "time": "2024-07-31T00:37:39+00:00"
+            "time": "2024-08-13T18:06:43+00:00"
         },
         {
             "name": "symfony/deprecation-contracts",
@@ -949,12 +949,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/VitexSoftware/php-ease-core.git",
-                "reference": "3f08bd966514bdc6b8b4b269e67a30033559db09"
+                "reference": "5f285ab36f71a1ba03e1db27e1616beacaf6a78a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/VitexSoftware/php-ease-core/zipball/3f08bd966514bdc6b8b4b269e67a30033559db09",
-                "reference": "3f08bd966514bdc6b8b4b269e67a30033559db09",
+                "url": "https://api.github.com/repos/VitexSoftware/php-ease-core/zipball/5f285ab36f71a1ba03e1db27e1616beacaf6a78a",
+                "reference": "5f285ab36f71a1ba03e1db27e1616beacaf6a78a",
                 "shasum": ""
             },
             "require": {
@@ -1003,7 +1003,7 @@
                     "type": "patreon"
                 }
             ],
-            "time": "2024-06-20T18:44:15+00:00"
+            "time": "2024-08-10T21:18:43+00:00"
         },
         {
             "name": "vitexsoftware/rbczpremiumapi",
@@ -1705,12 +1705,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "9c42d47c1c173496e7553e617805149a53adbc1c"
+                "reference": "846c7cefad8824f281f521b9625dd301064ead88"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/9c42d47c1c173496e7553e617805149a53adbc1c",
-                "reference": "9c42d47c1c173496e7553e617805149a53adbc1c",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/846c7cefad8824f281f521b9625dd301064ead88",
+                "reference": "846c7cefad8824f281f521b9625dd301064ead88",
                 "shasum": ""
             },
             "require": {
@@ -1800,7 +1800,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2024-07-28T07:34:52+00:00"
+            "time": "2024-08-14T08:16:04+00:00"
         },
         {
             "name": "sebastian/cli-parser",

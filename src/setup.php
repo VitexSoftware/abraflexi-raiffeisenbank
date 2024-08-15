@@ -53,3 +53,17 @@ try {
     echo 'Exception when calling GetAccountsApi->getAccounts: ', $e->getMessage(), PHP_EOL;
 }
 
+$event = \Ease\Functions::cfg('ABRAFLEXI_EVENT', false);
+
+if($event) {
+    $eventor = new \AbraFlexi\TypAktivity();
+    $eventor->setDataValue('kod', \AbraFlexi\Functions::code($event));
+    $eventor->setDataValue('nazev',$event);
+    $eventor->setDataValue('druhUdalK','druhUdal.udal');
+    if($eventor->recordExists() === false){
+        $eventor->insertToAbraFlexi();
+    }
+    $eventor->addStatusMessage(sprintf( _('Event Type %s created'), $event), $eventor->success());
+}
+
+
