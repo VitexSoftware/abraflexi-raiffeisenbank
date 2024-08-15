@@ -8,7 +8,7 @@
     "uuid": "ad1394f4-cf59-4523-a83c-020a779ccc2f",
     "deploy": "apt install abraflexi-raiffeisenbank",
     "homepage": "https:\/\/github.com\/VitexSoftware\/abraflexi-raiffeisenbank",
-    "topics": "RaiffeisenBank, Transactions",
+    "topics": "RaiffeisenBank, Statements",
     "environment": {
         "ABRAFLEXI_COMPANY": {
             "type": "string",
