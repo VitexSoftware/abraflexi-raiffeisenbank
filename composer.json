@@ -15,6 +15,7 @@
     },
     "autoload": {
         "psr-4": {
+            "AbraFlexi\\": "src/AbraFlexi/",
             "AbraFlexi\\RaiffeisenBank\\": "src/AbraFlexi/RaiffeisenBank/"
         }
     },

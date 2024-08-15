@@ -17,7 +17,8 @@ require_once( '../vendor/autoload.php');
 BankClient::checkCertificatePresence(\Ease\Functions::cfg('CERT_FILE'));
 $engine = new Statementor(\Ease\Functions::cfg('ACCOUNT_NUMBER'));
 $engine->setScope(\Ease\Functions::cfg('STATEMENT_IMPORT_SCOPE', 'last_month'));
-$statements = $engine->getStatements();
-$engine->download(sys_get_temp_dir().'/');
-$eventor = new \AbraFlexi\Udalost();
+
+$eventor = new Event();
+$eventor->createEvent($engine);
+
 # public function download(string $saveTo, array $statements, $format = 'pdf', $currencyCode = 'CZK') 

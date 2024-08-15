@@ -1,4 +1,10 @@
-abraflexi-raiffeisenbank (1.1.3) UNRELEASED; urgency=low
+abraflexi-raiffeisenbank (1.2.0) UNRELEASED; urgency=medium
+
+  * Import PDF statement into Events
+
+ -- vitex <info@vitexsoftware.cz>  Thu, 15 Aug 2024 03:11:33 +0200
+
+abraflexi-raiffeisenbank (1.1.3) unstable; urgency=low
 
   [ Vítězslav Dvořák ]
   * Initial release. Closes: #nnnn
@@ -14,4 +20,4 @@ abraflexi-raiffeisenbank (1.1.3) UNRELEASED; urgency=low
   * MultiFlexi package added
   * fix: die with code 1 at record inserting fail
 
- -- vitex <info@vitexsoftware.cz>  Wed, 10 Jan 2024 19:44:24 +0100
+ -- vitex <info@vitexsoftware.cz>  Thu, 15 Aug 2024 03:10:55 +0200
