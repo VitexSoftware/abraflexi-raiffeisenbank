@@ -1,27 +1,32 @@
 <?php
 
+declare(strict_types=1);
+
 /**
- * RaiffeisenBank - Statements handler class
+ * This file is part of the AbraFlexi-RaiffeisenBank package
  *
- * @author     Vítězslav Dvořák <info@vitexsoftware.com>
- * @copyright  (C) 2023-2024 Spoje.Net
+ * (c) Vítězslav Dvořák <http://vitexsoftware.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
  */
 
 namespace AbraFlexi\RaiffeisenBank;
 
 /**
- * Description of Statementor
+ * Description of Statementor.
  *
  * @author vitex
  */
-class Statementor extends BankClient {
-
+class Statementor extends BankClient
+{
     /**
-     * Obtain Transactions from RB
-     * 
+     * Obtain Transactions from RB.
+     *
      * @return array
      */
-    public function getStatements() {
+    public function getStatements()
+    {
         $apiInstance = new \VitexSoftware\Raiffeisenbank\PremiumAPI\GetStatementListApi();
         $page = 0;
         $statements = [];
@@ -39,26 +44,33 @@ class Statementor extends BankClient {
                     'dateTo' => $this->until->format(self::$dateFormat)]);
 
                 $result = $apiInstance->getStatements($this->getxRequestId(), $requestBody, $page);
+
                 if (empty($result)) {
                     $this->addStatusMessage(sprintf(_('No transactions from %s to %s'), $this->since->format(self::$dateFormat), $this->until->format(self::$dateFormat)));
                     $result['lastPage'] = true;
                 }
-                if (array_key_exists('statements', $result)) {
+
+                if (\array_key_exists('statements', $result)) {
                     $statements = array_merge($statements, $result['statements']);
                 }
+
                 sleep(1);
             } while ($result['last'] === false);
         } catch (Exception $e) {
-            echo 'Exception when calling GetTransactionListApi->getTransactionList: ', $e->getMessage(), PHP_EOL;
+            echo 'Exception when calling GetTransactionListApi->getTransactionList: ', $e->getMessage(), \PHP_EOL;
         }
+
         return $statements;
     }
 
-    public function import() {
+    public function import(): void
+    {
         $statements = $this->getStatements();
+
         if ($statements) {
             $apiInstance = new \VitexSoftware\Raiffeisenbank\PremiumAPI\DownloadStatementApi();
             $success = 0;
+
             foreach ($statements as $statement) {
                 $requestBody = new \VitexSoftware\Raiffeisenbank\Model\DownloadStatementRequest([
                     'accountNumber' => $this->bank->getDataValue('buc'),
@@ -67,6 +79,7 @@ class Statementor extends BankClient {
                     'statementFormat' => 'xml']);
                 $xmlStatementRaw = $apiInstance->downloadStatement($this->getxRequestId(), 'cs', $requestBody);
                 $statementXML = new \SimpleXMLElement($xmlStatementRaw);
+
                 foreach ($statementXML->BkToCstmrStmt->Stmt->Ntry as $ntry) {
                     $this->dataReset();
                     $this->ntryToAbraFlexi($ntry);
@@ -74,24 +87,27 @@ class Statementor extends BankClient {
                     $this->setDataValue('cisSouhrnne', $statementXML->BkToCstmrStmt->Stmt->LglSeqNb);
                     $success = $this->insertTransactionToAbraFlexi($success);
                 }
-                $this->addStatusMessage('Import done. ' . $success . ' of ' . count($statements) . ' imported');
+
+                $this->addStatusMessage('Import done. '.$success.' of '.\count($statements).' imported');
             }
         }
     }
 
     /**
-     * Parse Ntry element into \AbraFlexi\Banka data
-     * 
+     * Parse Ntry element into \AbraFlexi\Banka data.
+     *
      * @param SimpleXMLElement $ntry
-     * 
+     *
      * @return array
      */
-    public function ntryToAbraFlexi($ntry) {
+    public function ntryToAbraFlexi($ntry)
+    {
         $this->setDataValue('typDokl', \AbraFlexi\RO::code(\Ease\Functions::cfg('TYP_DOKLADU', 'STANDARD')));
         $this->setDataValue('bezPolozek', true);
         $this->setDataValue('stavUzivK', 'stavUziv.nactenoEl');
-        $this->setDataValue('poznam', 'Import Job ' . \Ease\Functions::cfg('JOB_ID', 'n/a'));
-        if (trim($ntry->CdtDbtInd) == 'CRDT') {
+        $this->setDataValue('poznam', 'Import Job '.\Ease\Functions::cfg('JOB_ID', 'n/a'));
+
+        if (trim($ntry->CdtDbtInd) === 'CRDT') {
             $this->setDataValue('rada', \AbraFlexi\RO::code('BANKA+'));
         } else {
             $this->setDataValue('rada', \AbraFlexi\RO::code('BANKA-'));
@@ -99,17 +115,17 @@ class Statementor extends BankClient {
 
         $moveTrans = ['DBIT' => 'typPohybu.vydej', 'CRDT' => 'typPohybu.prijem'];
         $this->setDataValue('typPohybuK', $moveTrans[trim($ntry->CdtDbtInd)]);
-        $this->setDataValue('cisDosle', strval($ntry->NtryRef));
+        $this->setDataValue('cisDosle', (string) $ntry->NtryRef);
         $this->setDataValue('datVyst', \AbraFlexi\RO::dateToFlexiDate(new \DateTime($ntry->BookgDt->DtTm)));
         $this->setDataValue('sumOsv', abs($ntry->Amt));
         $this->setDataValue('banka', $this->bank);
         $this->setDataValue('mena', \AbraFlexi\RO::code($ntry->Amt->attributes()->Ccy));
+
         if (property_exists($ntry, 'NtryDtls')) {
-
             if (property_exists($ntry->NtryDtls, 'TxDtls')) {
-
                 $conSym = $ntry->NtryDtls->TxDtls->Refs->InstrId;
-                if (intval($conSym)) {
+
+                if ((int) $conSym) {
                     $conSym = sprintf('%04d', $conSym);
                     $this->ensureKSExists($conSym);
                     $this->setDataValue('konSym', \AbraFlexi\RO::code($conSym));
@@ -118,16 +134,18 @@ class Statementor extends BankClient {
                 if (property_exists($ntry->NtryDtls->TxDtls->Refs, 'EndToEndId')) {
                     $this->setDataValue('varSym', $ntry->NtryDtls->TxDtls->Refs->EndToEndId);
                 }
+
                 $transactionData['popis'] = $ntry->NtryDtls->TxDtls->AddtlTxInf;
+
                 if (property_exists($ntry->NtryDtls->TxDtls, 'RltdPties')) {
                     if (property_exists($ntry->NtryDtls->TxDtls->RltdPties, 'DbtrAcct')) {
                         $this->setDataValue('buc', $ntry->NtryDtls->TxDtls->RltdPties->DbtrAcct->Id->Othr->Id);
                     }
+
                     $this->setDataValue('nazFirmy', $ntry->NtryDtls->TxDtls->RltdPties->DbtrAcct->Nm);
                 }
 
                 if (property_exists($ntry->NtryDtls->TxDtls, 'RltdAgts')) {
-
                     if (property_exists($ntry->NtryDtls->TxDtls->RltdAgts->DbtrAgt, 'FinInstnId')) {
                         $this->setDataValue('smerKod', \AbraFlexi\RO::code($ntry->NtryDtls->TxDtls->RltdAgts->DbtrAgt->FinInstnId->Othr->Id));
                     }
@@ -136,98 +154,114 @@ class Statementor extends BankClient {
         }
 
         $this->setDataValue('source', $this->sourceString());
+
         return $transactionData;
     }
 
     /**
-     * Prepare processing interval
-     * 
-     * @param string $scope 
-     * 
+     * Prepare processing interval.
+     *
+     * @param string $scope
+     *
      * @throws \Exception
      */
-    function setScope($scope) {
+    public function setScope($scope): void
+    {
         switch ($scope) {
             case 'yesterday':
                 $this->since = (new \DateTime('yesterday'))->setTime(0, 0);
                 $this->until = (new \DateTime('yesterday'))->setTime(23, 59);
+
                 break;
             case 'current_month':
-                $this->since = new \DateTime("first day of this month");
+                $this->since = new \DateTime('first day of this month');
                 $this->until = new \DateTime();
+
                 break;
             case 'last_month':
-                $this->since = new \DateTime("first day of last month");
-                $this->until = new \DateTime("last day of last month");
+                $this->since = new \DateTime('first day of last month');
+                $this->until = new \DateTime('last day of last month');
+
                 break;
             case 'last_two_months':
-                $this->since = (new \DateTime("first day of last month"))->modify('-1 month');
-                $this->until = (new \DateTime("last day of last month"));
+                $this->since = (new \DateTime('first day of last month'))->modify('-1 month');
+                $this->until = (new \DateTime('last day of last month'));
+
                 break;
             case 'previous_month':
-                $this->since = new \DateTime("first day of -2 month");
-                $this->until = new \DateTime("last day of -2 month");
+                $this->since = new \DateTime('first day of -2 month');
+                $this->until = new \DateTime('last day of -2 month');
+
                 break;
             case 'two_months_ago':
-                $this->since = new \DateTime("first day of -3 month");
-                $this->until = new \DateTime("last day of -3 month");
+                $this->since = new \DateTime('first day of -3 month');
+                $this->until = new \DateTime('last day of -3 month');
+
                 break;
             case 'this_year':
-                $this->since = new \DateTime('first day of January ' . date('Y'));
-                $this->until = new \DateTime("last day of December" . date('Y'));
+                $this->since = new \DateTime('first day of January '.date('Y'));
+                $this->until = new \DateTime('last day of December'.date('Y'));
+
                 break;
-            case 'January':  //1
-            case 'February': //2
-            case 'March':    //3
-            case 'April':    //4
-            case 'May':      //5
-            case 'June':     //6
-            case 'July':     //7
-            case 'August':   //8
-            case 'September'://9
-            case 'October':  //10
-            case 'November': //11
-            case 'December': //12
-                $this->since = new \DateTime('first day of ' . $scope . ' ' . date('Y'));
-                $this->until = new \DateTime('last day of ' . $scope . ' ' . date('Y'));
+            case 'January':  // 1
+            case 'February': // 2
+            case 'March':    // 3
+            case 'April':    // 4
+            case 'May':      // 5
+            case 'June':     // 6
+            case 'July':     // 7
+            case 'August':   // 8
+            case 'September':// 9
+            case 'October':  // 10
+            case 'November': // 11
+            case 'December': // 12
+                $this->since = new \DateTime('first day of '.$scope.' '.date('Y'));
+                $this->until = new \DateTime('last day of '.$scope.' '.date('Y'));
+
                 break;
             case 'auto':
                 $latestRecord = $this->getColumnsFromAbraFlexi(['id', 'lastUpdate'], ['limit' => 1, 'order' => 'lastUpdate@A', 'source' => $this->sourceString(), 'banka' => $this->bank]);
-                if (array_key_exists(0, $latestRecord) && array_key_exists('lastUpdate', $latestRecord[0])) {
+
+                if (\array_key_exists(0, $latestRecord) && \array_key_exists('lastUpdate', $latestRecord[0])) {
                     $this->since = $latestRecord[0]['lastUpdate'];
                 } else {
                     $this->addStatusMessage('Previous record for "auto since" not found. Defaulting to today\'s 00:00', 'warning');
                     $this->since = (new \DateTime())->setTime(0, 0);
                 }
-                $this->until = new \DateTime(); //Now
+
+                $this->until = new \DateTime(); // Now
+
                 break;
+
             default:
-                throw new \Exception('Unknown scope ' . $scope);
+                throw new \Exception('Unknown scope '.$scope);
+
                 break;
         }
-        if ($scope != 'auto' && $scope != 'today' && $scope != 'yesterday') {
+
+        if ($scope !== 'auto' && $scope !== 'today' && $scope !== 'yesterday') {
             $this->since = $this->since->setTime(0, 0);
             $this->until = $this->until->setTime(0, 0);
         }
     }
 
     /**
-     * 
-     * @param string $saveTo
-     * 
      * @return string File saved
      */
-    public function download(string $saveTo) {
+    public function download(string $saveTo)
+    {
         $downloaded = null;
         $statements = $this->getStatements();
+
         if ($statements) {
             $apiInstance = new \VitexSoftware\Raiffeisenbank\PremiumAPI\DownloadStatementApi();
             $success = 0;
+
             foreach ($statements as $statement) {
-                $statementFilename = str_replace('/', '_', $statement->statementNumber) . '_' .
-                        $statement->accountNumber . '_' .
-                        $statement->accountId . '_' .
-                        $statement->currency . '_' . $statement->dateFrom . '.pdf';
+                $statementFilename = str_replace('/', '_', $statement->statementNumber).'_'.
+                        $statement->accountNumber.'_'.
+                        $statement->accountId.'_'.
+                        $statement->currency.'_'.$statement->dateFrom.'.pdf';
                 $requestBody = new \VitexSoftware\Raiffeisenbank\Model\DownloadStatementRequest([
                     'accountNumber' => $this->bank->getDataValue('buc'),
                     'currency' => $this->getCurrencyCode(),
@@ -235,15 +269,18 @@ class Statementor extends BankClient {
                     'statementFormat' => 'pdf']);
                 $pdfStatementRaw = $apiInstance->downloadStatement($this->getxRequestId(), 'cs', $requestBody);
                 sleep(1);
-                if (file_put_contents($saveTo . '/' . $statementFilename, $pdfStatementRaw->fread($pdfStatementRaw->getSize()))) {
-                    $this->addStatusMessage($statementFilename . ' saved', 'success');
+
+                if (file_put_contents($saveTo.'/'.$statementFilename, $pdfStatementRaw->fread($pdfStatementRaw->getSize()))) {
+                    $this->addStatusMessage($statementFilename.' saved', 'success');
                     unset($pdfStatementRaw);
-                    $downloaded = $saveTo . '/' . $statementFilename;
-                    $success++;
+                    $downloaded = $saveTo.'/'.$statementFilename;
+                    ++$success;
                 }
             }
-            $this->addStatusMessage('Download done. ' . $success . ' of ' . count($statements) . ' saved');
+
+            $this->addStatusMessage('Download done. '.$success.' of '.\count($statements).' saved');
         }
+
         return $downloaded;
     }
 }
