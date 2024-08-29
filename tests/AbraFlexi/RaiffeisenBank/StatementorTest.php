@@ -1,10 +1,22 @@
 <?php
 
+declare(strict_types=1);
+
+/**
+ * This file is part of the AbraFlexi-RaiffeisenBank package
+ *
+ * (c) Vítězslav Dvořák <http://vitexsoftware.com>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ * file that was distributed with this source code.
+ */
+
 use PHPUnit\Framework\TestCase;
 
-class StatementorTest extends TestCase {
-
-    public function testGetStatements() {
+class StatementorTest extends TestCase
+{
+    public function testGetStatements(): void
+    {
         $bankAccount = '1234567890';
         $bankClient = new \AbraFlexi\RaiffeisenBank\Statementor($bankAccount);
 
@@ -13,7 +25,8 @@ class StatementorTest extends TestCase {
         $this->assertIsArray($statements);
     }
 
-    public function testImport() {
+    public function testImport(): void
+    {
         $bankAccount = '1234567890';
         $bankClient = new \AbraFlexi\RaiffeisenBank\Statementor($bankAccount);
 
@@ -22,7 +35,8 @@ class StatementorTest extends TestCase {
         // Add assertions here
     }
 
-    public function testNtryToAbraFlexi() {
+    public function testNtryToAbraFlexi(): void
+    {
         $bankAccount = '1234567890';
         $bankClient = new \AbraFlexi\RaiffeisenBank\Statementor($bankAccount);
 
@@ -35,7 +49,8 @@ class StatementorTest extends TestCase {
         // Add more assertions here
     }
 
-    public function testSetScope() {
+    public function testSetScope(): void
+    {
         $bankAccount = '1234567890';
         $bankClient = new \AbraFlexi\RaiffeisenBank\Statementor($bankAccount);
 
@@ -50,7 +65,8 @@ class StatementorTest extends TestCase {
         // Add more test cases for different scope values
     }
 
-    public function testDownload() {
+    public function testDownload(): void
+    {
         $bankAccount = '1234567890';
         $bankClient = new \AbraFlexi\RaiffeisenBank\Statementor($bankAccount);
 
