@@ -17,7 +17,14 @@ require_once '../vendor/autoload.php';
 /**
  * Get List of bank accounts and import it into AbraFlexi.
  */
-\Ease\Shared::init(['ABRAFLEXI_URL', 'ABRAFLEXI_LOGIN', 'ABRAFLEXI_PASSWORD', 'ABRAFLEXI_COMPANY', 'CERT_FILE', 'CERT_PASS', 'XIBMCLIENTID'], $argv[1] ?? '../.env');
+
+// Parse command line arguments
+$options = getopt('e::', ['env::']);
+
+// Get the path to the .env file
+$envfile = $options['env'] ?? '../.env';
+
+\Ease\Shared::init(['ABRAFLEXI_URL', 'ABRAFLEXI_LOGIN', 'ABRAFLEXI_PASSWORD', 'ABRAFLEXI_COMPANY', 'CERT_FILE', 'CERT_PASS', 'XIBMCLIENTID'], $envfile);
 $apiInstance = new \VitexSoftware\Raiffeisenbank\PremiumAPI\GetAccountsApi();
 $x_request_id = time(); // string | Unique request id provided by consumer application for reference and auditing.
 
@@ -69,8 +76,8 @@ if ($event) {
     $eventor->setDataValue('druhUdalK', 'druhUdal.udal');
 
     if ($eventor->recordExists() === false) {
-        $eventor->insertToAbraFlexi();
+        $eventor->sync();
     }
 
-    $eventor->addStatusMessage(sprintf(_('Event Type %s created'), $event), $eventor->success());
+    $eventor->addStatusMessage(sprintf(_('Event Type %s %s created'), $event, $eventor->getRecordCode()), $eventor->success());
 }
