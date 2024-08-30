@@ -33,6 +33,8 @@ class Statementor extends BankClient
         $this->addStatusMessage(sprintf(_('Request statements from %s to %s'), $this->since->format(self::$dateFormat), $this->until->format(self::$dateFormat)), 'debug');
 
         try {
+            $stop = true;
+
             do {
                 $requestBody = new \VitexSoftware\Raiffeisenbank\Model\GetStatementsRequest([
                     'accountNumber' => $this->bank->getDataValue('buc'),
@@ -54,9 +56,15 @@ class Statementor extends BankClient
                     $statements = array_merge($statements, $result['statements']);
                 }
 
-                sleep(1);
-            } while ($result['last'] === false);
-        } catch (Exception $e) {
+                if (\array_key_exists('last', $result) && $result['last'] === true) {
+                    $stop = true;
+                }
+
+                if ($stop === false) {
+                    sleep(1);
+                }
+            } while ($stop === false);
+        } catch (\Exception $e) {
             echo 'Exception when calling GetTransactionListApi->getTransactionList: ', $e->getMessage(), \PHP_EOL;
         }
 
@@ -78,7 +86,8 @@ class Statementor extends BankClient
                     'statementId' => $statement->statementId,
                     'statementFormat' => 'xml']);
                 $xmlStatementRaw = $apiInstance->downloadStatement($this->getxRequestId(), 'cs', $requestBody);
-                $statementXML = new \SimpleXMLElement($xmlStatementRaw);
+                $xmlStatement = $xmlStatementRaw->fread($xmlStatementRaw->getSize());
+                $statementXML = new \SimpleXMLElement($xmlStatement);
 
                 foreach ($statementXML->BkToCstmrStmt->Stmt->Ntry as $ntry) {
                     $this->dataReset();
@@ -94,7 +103,7 @@ class Statementor extends BankClient
     }
 
     /**
-     * Parse Ntry element into \AbraFlexi\Banka data.
+     * Parse "Ntry" element into \AbraFlexi\Banka data.
      *
      * @param SimpleXMLElement $ntry
      *
@@ -107,23 +116,23 @@ class Statementor extends BankClient
         $this->setDataValue('stavUzivK', 'stavUziv.nactenoEl');
         $this->setDataValue('poznam', 'Import Job '.\Ease\Functions::cfg('JOB_ID', 'n/a'));
 
-        if (trim($ntry->CdtDbtInd) === 'CRDT') {
+        if ((string) $ntry->CdtDbtInd === 'CRDT') {
             $this->setDataValue('rada', \AbraFlexi\RO::code('BANKA+'));
         } else {
             $this->setDataValue('rada', \AbraFlexi\RO::code('BANKA-'));
         }
 
         $moveTrans = ['DBIT' => 'typPohybu.vydej', 'CRDT' => 'typPohybu.prijem'];
-        $this->setDataValue('typPohybuK', $moveTrans[trim($ntry->CdtDbtInd)]);
+        $this->setDataValue('typPohybuK', $moveTrans[(string) $ntry->CdtDbtInd]);
         $this->setDataValue('cisDosle', (string) $ntry->NtryRef);
-        $this->setDataValue('datVyst', \AbraFlexi\RO::dateToFlexiDate(new \DateTime($ntry->BookgDt->DtTm)));
-        $this->setDataValue('sumOsv', abs($ntry->Amt));
+        $this->setDataValue('datVyst', \AbraFlexi\RO::dateToFlexiDate(new \DateTime((string) $ntry->BookgDt->DtTm)));
+        $this->setDataValue('sumOsv', abs((float) ((string) $ntry->Amt)));
         $this->setDataValue('banka', $this->bank);
-        $this->setDataValue('mena', \AbraFlexi\RO::code($ntry->Amt->attributes()->Ccy));
+        $this->setDataValue('mena', \AbraFlexi\RO::code((string) $ntry->Amt->attributes()->Ccy));
 
         if (property_exists($ntry, 'NtryDtls')) {
             if (property_exists($ntry->NtryDtls, 'TxDtls')) {
-                $conSym = $ntry->NtryDtls->TxDtls->Refs->InstrId;
+                $conSym = (string) $ntry->NtryDtls->TxDtls->Refs->InstrId;
 
                 if ((int) $conSym) {
                     $conSym = sprintf('%04d', $conSym);
@@ -132,22 +141,22 @@ class Statementor extends BankClient
                 }
 
                 if (property_exists($ntry->NtryDtls->TxDtls->Refs, 'EndToEndId')) {
-                    $this->setDataValue('varSym', $ntry->NtryDtls->TxDtls->Refs->EndToEndId);
+                    $this->setDataValue('varSym', (string) $ntry->NtryDtls->TxDtls->Refs->EndToEndId);
                 }
 
-                $transactionData['popis'] = $ntry->NtryDtls->TxDtls->AddtlTxInf;
+                $transactionData['popis'] = (string) $ntry->NtryDtls->TxDtls->AddtlTxInf;
 
                 if (property_exists($ntry->NtryDtls->TxDtls, 'RltdPties')) {
                     if (property_exists($ntry->NtryDtls->TxDtls->RltdPties, 'DbtrAcct')) {
-                        $this->setDataValue('buc', $ntry->NtryDtls->TxDtls->RltdPties->DbtrAcct->Id->Othr->Id);
+                        $this->setDataValue('buc', (string) $ntry->NtryDtls->TxDtls->RltdPties->DbtrAcct->Id->Othr->Id);
                     }
 
-                    $this->setDataValue('nazFirmy', $ntry->NtryDtls->TxDtls->RltdPties->DbtrAcct->Nm);
+                    $this->setDataValue('nazFirmy', (string) $ntry->NtryDtls->TxDtls->RltdPties->DbtrAcct->Nm);
                 }
 
                 if (property_exists($ntry->NtryDtls->TxDtls, 'RltdAgts')) {
                     if (property_exists($ntry->NtryDtls->TxDtls->RltdAgts->DbtrAgt, 'FinInstnId')) {
-                        $this->setDataValue('smerKod', \AbraFlexi\RO::code($ntry->NtryDtls->TxDtls->RltdAgts->DbtrAgt->FinInstnId->Othr->Id));
+                        $this->setDataValue('smerKod', \AbraFlexi\RO::code((string) $ntry->NtryDtls->TxDtls->RltdAgts->DbtrAgt->FinInstnId->Othr->Id));
                     }
                 }
             }
@@ -234,7 +243,13 @@ class Statementor extends BankClient
                 break;
 
             default:
-                throw new \Exception('Unknown scope '.$scope);
+                if (strstr($scope, '>')) {
+                    [$begin, $end] = explode('>', $scope);
+                    $this->since = new \DateTime($begin);
+                    $this->until = new \DateTime($end);
+                } else {
+                    throw new \Exception('Unknown scope '.$scope);
+                }
 
                 break;
         }
@@ -246,9 +261,11 @@ class Statementor extends BankClient
     }
 
     /**
-     * @return string File saved
+     * Download PDF Statements.
+     *
+     * @return array<string> Files saved
      */
-    public function download(string $saveTo)
+    public function download(string $saveTo): array
     {
         $downloaded = null;
         $statements = $this->getStatements();
@@ -258,10 +275,11 @@ class Statementor extends BankClient
             $success = 0;
 
             foreach ($statements as $statement) {
-                $statementFilename = str_replace('/', '_', $statement->statementNumber).'_'.
+                $statementNumber = str_replace('/', '_', $statement->statementNumber).'_'.
                         $statement->accountNumber.'_'.
                         $statement->accountId.'_'.
-                        $statement->currency.'_'.$statement->dateFrom.'.pdf';
+                        $statement->currency.'_'.$statement->dateFrom;
+                $statementFilename = $statementNumber.'.pdf';
                 $requestBody = new \VitexSoftware\Raiffeisenbank\Model\DownloadStatementRequest([
                     'accountNumber' => $this->bank->getDataValue('buc'),
                     'currency' => $this->getCurrencyCode(),
@@ -271,9 +289,9 @@ class Statementor extends BankClient
                 sleep(1);
 
                 if (file_put_contents($saveTo.'/'.$statementFilename, $pdfStatementRaw->fread($pdfStatementRaw->getSize()))) {
-                    $this->addStatusMessage($statementFilename.' saved', 'success');
+                    $this->addStatusMessage($saveTo.'/'.$statementFilename.' saved', 'success');
                     unset($pdfStatementRaw);
-                    $downloaded = $saveTo.'/'.$statementFilename;
+                    $downloaded[$statementNumber] = $saveTo.'/'.$statementFilename;
                     ++$success;
                 }
             }

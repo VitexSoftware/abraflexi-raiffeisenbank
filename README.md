@@ -56,27 +56,28 @@ TYP_DOKLADU=STANDARD
 Import Scopes
 -------------
 
-  * today 
-  * yesterday
-  * current_month
-  * last_month
-  * last_two_months
-  * previous_month
-  * two_months_ago
-  * this_year
-  * January
-  * February
-  * March
-  * April
-  * May
-  * June
-  * July
-  * August
-  * September
-  * October
-  * November
-  * December
-  * auto
+  * `today` 
+  * `yesterday`
+  * `current_month`
+  * `last_month`
+  * `last_two_months`
+  * `previous_month`
+  * `two_months_ago`
+  * `this_year`
+  * `January`
+  * `February`
+  * `March`
+  * `April`
+  * `May`
+  * `June`
+  * `July`
+  * `August`
+  * `September`
+  * `October`
+  * `November`
+  * `December`
+  * `auto`
+  * `2024-08-05>2024-08-11` - custom scope 
 
 
 Powered by: https://github.com/VitexSoftware/php-vitexsoftware-rbczpremiumapi

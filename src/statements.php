@@ -13,12 +13,23 @@ declare(strict_types=1);
 
 namespace AbraFlexi\RaiffeisenBank;
 
+\define('APP_NAME', 'RBStatements2AbraFlexi');
+
 require_once '../vendor/autoload.php';
+
 /**
  * Get today's statements list.
  */
-\Ease\Shared::init(['ABRAFLEXI_URL', 'ABRAFLEXI_LOGIN', 'ABRAFLEXI_PASSWORD', 'ABRAFLEXI_COMPANY', 'CERT_FILE', 'CERT_PASS', 'XIBMCLIENTID', 'ACCOUNT_NUMBER'], $argv[1] ?? '../.env');
-BankClient::checkCertificatePresence(\Ease\Functions::cfg('CERT_FILE'));
-$engine = new Statementor(\Ease\Functions::cfg('ACCOUNT_NUMBER'));
-$engine->setScope(\Ease\Functions::cfg('STATEMENT_IMPORT_SCOPE', 'last_month'));
+
+// Parse command line arguments
+$options = getopt('s::e::', ['scope::', 'env::']);
+
+// Get the path to the .env file
+$envfile = $options['env'] ?? '../.env';
+$scope = $options['scope'] ?? \Ease\Shared::cfg('STATEMENT_IMPORT_SCOPE', 'last_month');
+
+\Ease\Shared::init(['ABRAFLEXI_URL', 'ABRAFLEXI_LOGIN', 'ABRAFLEXI_PASSWORD', 'ABRAFLEXI_COMPANY', 'CERT_FILE', 'CERT_PASS', 'XIBMCLIENTID', 'ACCOUNT_NUMBER'], $envfile);
+BankClient::checkCertificatePresence(\Ease\Shared::cfg('CERT_FILE'));
+$engine = new Statementor(\Ease\Shared::cfg('ACCOUNT_NUMBER'));
+$engine->setScope($scope);
 $engine->import();

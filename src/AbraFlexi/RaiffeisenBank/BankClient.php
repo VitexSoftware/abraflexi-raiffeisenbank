@@ -29,14 +29,11 @@ abstract class BankClient extends \AbraFlexi\Banka
      * DateTime Formating eg. 2021-08-01T10:00:00.0Z.
      */
     public static string $dateFormat = 'Y-m-d';
-    protected $constantor;
-    protected $constSymbols;
-
+    protected \AbraFlexi\KonstSymbol $constantor;
+    protected ?array $constSymbols;
     protected \DateTime $since;
-
     protected \DateTime $until;
-
-    protected \AbraFlexi\Banka $bank;
+    protected \AbraFlexi\BankovniUcet $bank;
 
     /**
      * Transaction Handler.
@@ -48,7 +45,7 @@ abstract class BankClient extends \AbraFlexi\Banka
     {
         parent::__construct(null, $options);
         $this->bank = $this->getBank($bankAccount);
-        $this->constantor = new \AbraFlexi\RW(null, ['evidence' => 'konst-symbol']);
+        $this->constantor = new \AbraFlexi\KonstSymbol();
         $this->constSymbols = $this->constantor->getColumnsFromAbraFlexi(['kod'], ['limit' => 0], 'kod');
     }
 
@@ -82,12 +79,10 @@ abstract class BankClient extends \AbraFlexi\Banka
      * @param string $accountNumber
      *
      * @throws Exception
-     *
-     * @return \AbraFlexi\RO
      */
-    public function getBank($accountNumber)
+    public function getBank($accountNumber): \AbraFlexi\BankovniUcet
     {
-        $banker = new \AbraFlexi\RO(null, ['evidence' => 'bankovni-ucet']);
+        $banker = new \AbraFlexi\BankovniUcet();
         $candidat = $banker->getColumnsFromAbraFlexi('id', ['buc' => $accountNumber]);
 
         if (empty($candidat) || !\array_key_exists('id', $candidat[0])) {
@@ -248,7 +243,7 @@ abstract class BankClient extends \AbraFlexi\Banka
                 exit(1);
             }
 
-            $this->addStatusMessage('New entry '.$this->getRecordIdent().' '.$this->getDataValue('nazFirmy').': '.$this->getDataValue('popis').' '.$this->getDataValue('sumOsv').' '.\AbraFlexi\RO::uncode($this->getDataValue('mena')), $result ? 'success' : 'error');
+            $this->addStatusMessage('New entry '.$this->getRecordIdent().' '.$this->getDataValue('nazFirmy').': '.$this->getDataValue('popis').' '.$this->getDataValue('sumOsv').' '.\AbraFlexi\RO::uncode((string) $this->getDataValue('mena')), $result ? 'success' : 'error');
             ++$success;
         } else {
             $this->addStatusMessage('Record with remoteNumber '.$this->getDataValue('cisDosle').' already present in AbraFlexi', 'warning');
