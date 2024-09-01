@@ -9,6 +9,7 @@
     "deploy": "apt install abraflexi-raiffeisenbank",
     "homepage": "https:\/\/github.com\/VitexSoftware\/abraflexi-raiffeisenbank",
     "topics": "RaiffeisenBank, Statements",
+    "requirements": "RaiffeisenBank, AbraFlexi",
     "environment": {
         "ABRAFLEXI_COMPANY": {
             "type": "string",
