@@ -10,6 +10,7 @@
     "homepage": "https:\/\/github.com\/VitexSoftware\/abraflexi-raiffeisenbank",
     "uuid": "e2d13c2f-d265-4d49-9405-2dee3030a568",
     "topics": "RaiffeisenBank, Transactions",
+    "requirements": "RaiffeisenBank, AbraFlexi",
     "environment": {
         "ABRAFLEXI_COMPANY": {
             "type": "string",

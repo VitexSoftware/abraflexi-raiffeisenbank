@@ -32,11 +32,13 @@ class Event extends \AbraFlexi\Udalost
             $eventData['popis'] = sprintf(_('Raiffeisen Bank Account %s Statement (%s)'), $accountNumner, $currency);
             $eventData['id'] = 'ext:'.$statementId;
             $eventData['termin'] = (new \AbraFlexi\Date($firstDay))->modify('+1 month');
+
             if ($this->recordExists(['id' => 'ext:'.$statementId])) {
                 $this->addStatusMessage(sprintf(_('Record %s already exists'), $statementId));
             } else {
                 $this->dataReset();
                 $this->setData($eventData);
+
                 if ($this->sync()) {
                     $attachment = \AbraFlexi\Priloha::addAttachmentFromFile($this, $statementFile);
                     $this->addStatusMessage(sprintf(_('The Statement was Attached to %s'), $this->getRecordIdent()), 'success');
