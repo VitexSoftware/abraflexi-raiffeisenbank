@@ -15,7 +15,7 @@ Description: Raiffeisen Bank Transaction puller for AbraFlexi
 
 Package: multiflexi-abraflexi-raiffeisenbank
 Architecture: all
-Depends: abraflexi-raiffeisenbank, multiflexi
+Depends: abraflexi-raiffeisenbank, multiflexi-raiffeisenbank
 Description: Add Raiffeisen Bank Transaction puller for AbraFlexi to MultiFlexi
  Allow use of Raiffeisen Bank Transaction puller for AbraFlexi in MultiFlexi environment
 
