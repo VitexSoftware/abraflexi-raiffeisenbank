@@ -1,5 +1,6 @@
 bin/*			usr/bin
 src/*.php		usr/lib/abraflexi-raiffeisenbank/
+src/AbraFlexi/*.php 	usr/share/abraflexi-raiffeisenbank/AbraFlexi
 src/AbraFlexi/RaiffeisenBank/*.php 	usr/share/abraflexi-raiffeisenbank/RaiffeisenBank
 debian/composer.json	usr/lib/abraflexi-raiffeisenbank/
 abraflexi-raiffeisenbank.svg    /usr/share/icons/hicolor/scalable/apps/
