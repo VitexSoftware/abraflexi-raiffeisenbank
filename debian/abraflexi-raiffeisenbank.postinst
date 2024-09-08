@@ -1,9 +1,10 @@
 #!/bin/sh
 set -e
 
+composer-debian abraflexi-raiffeisenbank
+
 case "$1" in
     configure)
-        composer-debian abraflexi-raiffeisenbank
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
