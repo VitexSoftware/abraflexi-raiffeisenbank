@@ -243,7 +243,7 @@ abstract class BankClient extends \AbraFlexi\Banka
                 exit(1);
             }
 
-            $this->addStatusMessage('New entry '.$this->getRecordIdent().' '.$this->getDataValue('nazFirmy').': '.$this->getDataValue('popis').' '.$this->getDataValue('sumOsv').' '. \AbraFlexi\Functions::uncode((string) $this->getDataValue('mena')), $result ? 'success' : 'error');
+            $this->addStatusMessage('New entry '.$this->getRecordIdent().' '.$this->getDataValue('nazFirmy').': '.$this->getDataValue('popis').' '.$this->getDataValue('sumOsv').' '.\AbraFlexi\Functions::uncode((string) $this->getDataValue('mena')), $result ? 'success' : 'error');
             ++$success;
         } else {
             $this->addStatusMessage('Record with remoteNumber '.$this->getDataValue('cisDosle').' already present in AbraFlexi', 'warning');
