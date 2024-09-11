@@ -87,9 +87,7 @@ MultiFlexi
 
 AbraFlexi RaiffeisenBank is ready for run as [MultiFlexi](https://multiflexi.eu) application.
 
-<img src="abraflexi-raiffeisenbank-events.svg?raw=true" width="100" height="100">
-<img src="abraflexi-raiffeisenbank-statements.svg?raw=true" width="100" height="100">
-<img src="abraflexi-raiffeisenbank-transactions.svg?raw=true" width="100" height="100">
+<img src="abraflexi-raiffeisenbank-events.svg?raw=true" width="100" height="100"><img src="abraflexi-raiffeisenbank-statements.svg?raw=true" width="100" height="100"><img src="abraflexi-raiffeisenbank-transactions.svg?raw=true" width="100" height="100">
 
 See the full list of ready-to-run applications within the MultiFlexi platform on the [application list page](https://www.multiflexi.eu/apps.php).
 
