@@ -20,5 +20,5 @@ namespace AbraFlexi;
  */
 class BankovniUcet extends \AbraFlexi\RW
 {
-    public $evidence = 'bankovni-ucet';
+    public ?string $evidence = 'bankovni-ucet';
 }

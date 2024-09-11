@@ -20,5 +20,5 @@ namespace AbraFlexi;
  */
 class KonstSymbol extends RW
 {
-    public $evidence = 'konst-symbol';
+    public ?string $evidence = 'konst-symbol';
 }

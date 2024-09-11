@@ -20,5 +20,5 @@ namespace AbraFlexi;
  */
 class TypAktivity extends \AbraFlexi\RW
 {
-    public $evidence = 'typ-aktivity';
+    public ?string $evidence = 'typ-aktivity';
 }
