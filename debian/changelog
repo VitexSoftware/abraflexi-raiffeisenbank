@@ -1,8 +1,14 @@
-abraflexi-raiffeisenbank (1.2.0) UNRELEASED; urgency=medium
+abraflexi-raiffeisenbank (1.2.1) UNRELEASED; urgency=medium
+
+  * AbraFlexi logo update
+
+ -- vitex <info@vitexsoftware.cz>  Wed, 11 Sep 2024 11:28:08 +0200
+
+abraflexi-raiffeisenbank (1.2.0) unstable; urgency=medium
 
   * Custom scope addedd to statement importer
 
- -- vitex <info@vitexsoftware.cz>  Fri, 30 Aug 2024 16:23:05 +0200
+ -- vitex <info@vitexsoftware.cz>  Wed, 11 Sep 2024 11:27:48 +0200
 
 abraflexi-raiffeisenbank (1.2.0) unstable; urgency=medium
 
