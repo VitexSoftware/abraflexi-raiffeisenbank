@@ -4,9 +4,8 @@ set -e
 
 . /usr/share/debconf/confmodule
 
-rm -f /usr/lib/abraflexi-raiffeisenbank/multiflexi/abraflexi_raiffeisenbank.multiflexi.app.json
-
-for file in `ls /usr/lib/abraflexi-raiffeisenbank/multiflexi/*.json`
+APPLICATION=`echo $DPKG_MAINTSCRIPT_PACKAGE | sed 's/multiflexi-//'`
+for file in `ls /usr/lib/$APPLICATION/multiflexi/*.json`
 do
 	multiflexi-json2app $file
 done
