@@ -24,7 +24,7 @@ $options = getopt('s::e::', ['scope::', 'env::']);
 $envfile = $options['env'] ?? '../.env';
 \Ease\Shared::init(['ABRAFLEXI_URL', 'ABRAFLEXI_LOGIN', 'ABRAFLEXI_PASSWORD', 'ABRAFLEXI_COMPANY', 'CERT_FILE', 'CERT_PASS', 'XIBMCLIENTID', 'ACCOUNT_NUMBER', 'ABRAFLEXI_EVENT'], $envfile);
 
-$scope = $options['scope'] ?? \Ease\Shared::cfg('STATEMENT_IMPORT_SCOPE', 'last_month');
+$scope = $options['scope'] ?? \Ease\Shared::cfg('IMPORT_SCOPE', 'last_month');
 
 BankClient::checkCertificatePresence(\Ease\Functions::cfg('CERT_FILE'));
 $engine = new Statementor(\Ease\Functions::cfg('ACCOUNT_NUMBER'));

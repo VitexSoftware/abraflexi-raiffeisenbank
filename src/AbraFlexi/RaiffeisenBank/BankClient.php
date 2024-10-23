@@ -175,14 +175,27 @@ abstract class BankClient extends \AbraFlexi\Banka
                 break;
 
             default:
-                throw new \Exception('Unknown scope '.$scope);
+                if (strstr($scope, '>')) {
+                    [$begin, $end] = explode('>', $scope);
+                    $this->since = new \DateTime($begin);
+                    $this->until = new \DateTime($end);
+                } else {
+                    if (preg_match('/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/', $scope)) {
+                        $this->since = new \DateTime($scope);
+                        $this->until = (new \DateTime($scope))->setTime(23, 59);
+
+                        break;
+                    }
+
+                    throw new \Exception('Unknown scope '.$scope);
+                }
 
                 break;
         }
 
-        if ($scope !== 'auto' && $scope !== 'today' && $scope !== 'yesterday') {
+        if ($scope !== 'auto' && $scope !== 'today' && $scope !== 'yesterday' && !strstr($scope, '-')) {
             $this->since = $this->since->setTime(0, 0);
-            $this->until = $this->until->setTime(0, 0);
+            $this->until = $this->until->setTime(23, 59);
         }
     }
 
@@ -237,18 +250,31 @@ abstract class BankClient extends \AbraFlexi\Banka
     {
         if ($this->checkForTransactionPresence() === false) {
             try {
-                $this->setDataValue('stredisko', ''); // HOTFIX For [{"message":"Pole 'St\u0159edisko' obsahuje neplatnou polo\u017eku \u010d\u00edseln\u00edku. [B+0001\/2024]","for":"stredisko","path":"banka[temporary-id=null].stredisko","code":"INVALID"}]
+                if (empty($this->getDataValue('stredisko'))) {
+                    $this->setDataValue('stredisko', ''); // HOTFIX For [{"message":"Pole 'St\u0159edisko' obsahuje neplatnou polo\u017eku \u010d\u00edseln\u00edku. [B+0001\/2024]","for":"stredisko","path":"banka[temporary-id=null].stredisko","code":"INVALID"}]
+                }
+
                 $result = $this->sync();
             } catch (\AbraFlexi\Exception $exc) {
-                exit(1);
+                throw $exc;
             }
 
-            $this->addStatusMessage('New entry '.$this->getRecordIdent().' '.$this->getDataValue('nazFirmy').': '.$this->getDataValue('popis').' '.$this->getDataValue('sumOsv').' '.\AbraFlexi\Functions::uncode((string) $this->getDataValue('mena')), $result ? 'success' : 'error');
+            $this->addStatusMessage('New entry '.$this->getDataValue('cisDosle').' '.$this->getRecordIdent().' '.$this->getDataValue('nazFirmy').': '.$this->getDataValue('popis').' '.$this->getDataValue('sumOsv').' '.\AbraFlexi\Functions::uncode((string) $this->getDataValue('mena')), $result ? 'success' : 'error');
             ++$success;
         } else {
             $this->addStatusMessage('Record with remoteNumber '.$this->getDataValue('cisDosle').' already present in AbraFlexi', 'warning');
         }
 
         return $success;
+    }
+
+    public function getSince(): \DateTime
+    {
+        return $this->since;
+    }
+
+    public function getUntil(): \DateTime
+    {
+        return $this->until;
     }
 }

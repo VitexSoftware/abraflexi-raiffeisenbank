@@ -66,8 +66,9 @@ class Transactor extends BankClient
     /**
      * Import process itself.
      */
-    public function import(): void
+    public function import(): array
     {
+        $payments = [];
         //        $allMoves = $this->getColumnsFromAbraFlexi('id', ['limit' => 0, 'banka' => $this->bank]);
         $allTransactions = $this->getTransactions();
         $success = 0;
@@ -78,12 +79,14 @@ class Transactor extends BankClient
             if (property_exists($transaction, 'creditDebitIndication')) {
                 $this->takeTransactionData($transaction);
                 $success = $this->insertTransactionToAbraFlexi($success);
+                $payments[] = $this->getRecordIdent();
             } else {
                 $this->addStatusMessage('Skipping transaction without creditDebitIndication', 'warning');
             }
         }
 
         $this->addStatusMessage('Import done. '.$success.' of '.\count($allTransactions).' imported');
+        return $payments;
     }
 
     /**
@@ -202,6 +205,12 @@ class Transactor extends BankClient
 
         $this->setDataValue('source', $this->sourceString());
         //        echo $this->getJsonizedData() . "\n";
+
+        if ((string) $transactionData->creditDebitIndication === 'CRDT') {
+            $this->setDataValue('rada', \AbraFlexi\RO::code('BANKA+'));
+        } else {
+            $this->setDataValue('rada', \AbraFlexi\RO::code('BANKA-'));
+        }
     }
 
     /**
@@ -238,14 +247,27 @@ class Transactor extends BankClient
                 break;
 
             default:
-                throw new \Exception('Unknown scope '.$scope);
+                if (strstr($scope, '>')) {
+                    [$begin, $end] = explode('>', $scope);
+                    $this->since = new \DateTime($begin);
+                    $this->until = new \DateTime($end);
+                } else {
+                    if (preg_match('/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/', $scope)) {
+                        $this->since = new \DateTime($scope);
+                        $this->until = (new \DateTime($scope))->setTime(23, 59);
+
+                        break;
+                    }
+
+                    throw new \Exception('Unknown scope '.$scope);
+                }
 
                 break;
         }
 
-        if ($scope !== 'auto' && $scope !== 'today' && $scope !== 'yesterday') {
+        if ($scope !== 'auto' && $scope !== 'today' && $scope !== 'yesterday' && strstr($scope, '-')) {
             $this->since = $this->since->setTime(0, 0);
-            $this->until = $this->until->setTime(0, 0);
+            $this->until = $this->until->setTime(23, 59);
         }
     }
 }

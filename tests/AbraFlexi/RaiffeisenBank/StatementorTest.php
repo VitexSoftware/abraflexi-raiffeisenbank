@@ -11,68 +11,143 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(\AbraFlexi\RaiffeisenBank\Statementor::class)]
 class StatementorTest extends TestCase
 {
+    protected \AbraFlexi\RaiffeisenBank\Statementor $statementor;
+    private string $bankAccount;
+
+    protected function setUp(): void
+    {
+        $this->bankAccount = \Ease\Functions::cfg('ACCOUNT_NUMBER');
+        $this->statementor = new \AbraFlexi\RaiffeisenBank\Statementor($this->bankAccount);
+    }
+
+    public function testSetScope(): void
+    {
+        $this->statementor->setScope('today');
+        $this->assertInstanceOf(\DateTime::class, $this->statementor->getSince());
+        $this->assertInstanceOf(\DateTime::class, $this->statementor->getUntil());
+
+        $this->statementor->setScope('last_month');
+        $this->assertInstanceOf(\DateTime::class, $this->statementor->getSince());
+        $this->assertInstanceOf(\DateTime::class, $this->statementor->getUntil());
+
+        // Add more test cases for different scope values
+    }
+
+    /**
+     * @depends testSetScope
+     */
+    #[Depends('testSetScope')]
+    public function testGetBank(): void
+    {
+        $bank = $this->statementor->getBank($this->bankAccount);
+
+        $this->assertInstanceOf(\AbraFlexi\BankovniUcet::class, $bank);
+    }
+
+    public function testGetxRequestId(): void
+    {
+        $xRequestId = $this->statementor->getxRequestId();
+
+        $this->assertIsString($xRequestId);
+    }
+
+    /**
+     * @depends testSetScope
+     */
+    #[Depends('testSetScope')]
     public function testGetStatements(): void
     {
-        $bankAccount = '1234567890';
-        $bankClient = new \AbraFlexi\RaiffeisenBank\Statementor($bankAccount);
-
-        $statements = $bankClient->getStatements();
+        $this->statementor->setScope('auto');
+        $statements = $this->statementor->getStatements();
 
         $this->assertIsArray($statements);
     }
 
+    /**
+     * @depends testSetScope
+     */
+    #[Depends('testSetScope')]
     public function testImport(): void
     {
-        $bankAccount = '1234567890';
-        $bankClient = new \AbraFlexi\RaiffeisenBank\Statementor($bankAccount);
+        $this->statementor->setScope('last_month');
+        $imported = $this->statementor->import();
 
-        $bankClient->import();
-
-        // Add assertions here
+        $this->assertIsArray($imported);
     }
 
     public function testNtryToAbraFlexi(): void
     {
-        $bankAccount = '1234567890';
-        $bankClient = new \AbraFlexi\RaiffeisenBank\Statementor($bankAccount);
+        $ntry = new \SimpleXMLElement(<<<'EOD'
+<Ntry>
+                <NtryRef>6727959302</NtryRef>
+                <Amt Ccy="CZK">41805.55</Amt>
+                <CdtDbtInd>DBIT</CdtDbtInd>
+                <Sts>BOOK</Sts>
+                <BookgDt>
+                    <DtTm>2024-09-10T00:56:17</DtTm>
+                </BookgDt>
+                <ValDt>
+                    <DtTm>2024-09-10T00:00:00</DtTm>
+                </ValDt>
+                <BkTxCd>
+                    <Prtry>
+                        <Cd>10000104000</Cd>
+                    </Prtry>
+                </BkTxCd>
+                <NtryDtls>
+                    <TxDtls>
+                        <Refs>
+                            <MsgId>1</MsgId>
+                            <AcctSvcrRef>6727959302</AcctSvcrRef>
+                        </Refs>
+                        <RltdPties>
+                            <CdtrAcct>
+                                <Id>
+                                    <Othr>
+                                        <Id>6430089575</Id>
+                                    </Othr>
+                                </Id>
+                                <Nm>Customer</Nm>
+                            </CdtrAcct>
+                        </RltdPties>
+                        <RltdAgts>
+                            <CdtrAgt>
+                                <FinInstnId>
+                                    <Othr>
+                                        <Id>5500</Id>
+                                    </Othr>
+                                </FinInstnId>
+                            </CdtrAgt>
+                        </RltdAgts>
+                        <AddtlTxInf>770871 INKASO 4861/23/021/SME/PRP</AddtlTxInf>
+                    </TxDtls>
+                </NtryDtls>
+            </Ntry>
 
-        $ntry = new \SimpleXMLElement('<Ntry></Ntry>');
-        // Set properties of $ntry
+EOD);
 
-        $transactionData = $bankClient->ntryToAbraFlexi($ntry);
+        $transactionData = $this->statementor->ntryToAbraFlexi($ntry);
 
         $this->assertIsArray($transactionData);
         // Add more assertions here
     }
 
-    public function testSetScope(): void
-    {
-        $bankAccount = '1234567890';
-        $bankClient = new \AbraFlexi\RaiffeisenBank\Statementor($bankAccount);
-
-        $bankClient->setScope('today');
-        $this->assertInstanceOf(\DateTime::class, $bankClient->since);
-        $this->assertInstanceOf(\DateTime::class, $bankClient->until);
-
-        $bankClient->setScope('last_month');
-        $this->assertInstanceOf(\DateTime::class, $bankClient->since);
-        $this->assertInstanceOf(\DateTime::class, $bankClient->until);
-
-        // Add more test cases for different scope values
-    }
-
+    /**
+     * @depends testSetScope
+     */
+    #[Depends('testSetScope')]
     public function testDownload(): void
     {
-        $bankAccount = '1234567890';
-        $bankClient = new \AbraFlexi\RaiffeisenBank\Statementor($bankAccount);
+        $this->statementor->setScope('auto');
+        $saveTo = sys_get_temp_dir();
+        $downloaded = $this->statementor->download($saveTo);
 
-        $saveTo = '/path/to/save/directory';
-        $bankClient->download($saveTo);
-
-        // Add assertions here
+        $this->assertIsArray($downloaded);
     }
 }

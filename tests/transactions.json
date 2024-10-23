@@ -1,0 +1,176 @@
+{
+    "lastPage": true,
+    "transactions": [{
+            "entryReference": "6828747987",
+            "amount": {
+                "value": 6776,
+                "currency": "CZK"
+            },
+            "creditDebitIndication": "CRDT",
+            "bookingDate": "2024-10-10T14:05:48.000+02:00",
+            "valueDate": "2024-10-10T14:05:47.000+02:00",
+            "bankTransactionCode": {
+                "code": "10000107000"
+            },
+            "entryDetails": {
+                "transactionDetails": {
+                    "references": {},
+                    "relatedParties": {
+                        "counterParty": {
+                            "name": "Customer s.r.o.",
+                            "organisationIdentification": {
+                                "bankCode": "0800"
+                            },
+                            "account": {
+                                "accountNumber": "6260979339"
+                            }
+                        }
+                    },
+                    "remittanceInformation": {
+                        "creditorReferenceInformation": {
+                            "variable": "197712024",
+                            "constant": "0"
+                        },
+                        "originatorMessage": "2024/09  IT"
+                    }
+                }
+            }
+        }, {
+            "entryReference": "6828021556",
+            "amount": {
+                "value": 2613.6,
+                "currency": "CZK"
+            },
+            "creditDebitIndication": "CRDT",
+            "bookingDate": "2024-10-10T10:29:51.000+02:00",
+            "valueDate": "2024-10-10T10:29:50.000+02:00",
+            "bankTransactionCode": {
+                "code": "10000107000"
+            },
+            "entryDetails": {
+                "transactionDetails": {
+                    "references": {},
+                    "relatedParties": {
+                        "counterParty": {
+                            "name": "Customer",
+                            "organisationIdentification": {
+                                "bankCode": "0800"
+                            },
+                            "account": {
+                                "accountNumber": "148665359"
+                            }
+                        }
+                    },
+                    "remittanceInformation": {
+                        "creditorReferenceInformation": {
+                            "variable": "187022024",
+                            "constant": "0308",
+                            "specific": "66406366"
+                        },
+                        "originatorMessage": "MICROSOFT 365 - LICENCE - BUSINESSSTANDARD - 23.8.2024 - 22"
+                    }
+                }
+            }
+        }, {
+            "entryReference": "6827431313",
+            "amount": {
+                "value": 1282.6,
+                "currency": "CZK"
+            },
+            "creditDebitIndication": "CRDT",
+            "bookingDate": "2024-10-10T07:51:37.000+02:00",
+            "valueDate": "2024-10-10T07:51:37.000+02:00",
+            "bankTransactionCode": {
+                "code": "10000107000"
+            },
+            "entryDetails": {
+                "transactionDetails": {
+                    "references": {},
+                    "relatedParties": {
+                        "counterParty": {
+                            "name": "Customer s.r.o",
+                            "organisationIdentification": {
+                                "bankCode": "0800"
+                            },
+                            "account": {
+                                "accountNumber": "6346517389"
+                            }
+                        }
+                    },
+                    "remittanceInformation": {
+                        "creditorReferenceInformation": {
+                            "variable": "178332024",
+                            "constant": "0"
+                        },
+                        "originatorMessage": "LICENCE MICROSOFT 365 - 08/2024"
+                    }
+                }
+            }
+        }, {
+            "entryReference": "6827430884",
+            "amount": {
+                "value": 1282.6,
+                "currency": "CZK"
+            },
+            "creditDebitIndication": "CRDT",
+            "bookingDate": "2024-10-10T07:51:17.000+02:00",
+            "valueDate": "2024-10-10T07:51:16.000+02:00",
+            "bankTransactionCode": {
+                "code": "10000107000"
+            },
+            "entryDetails": {
+                "transactionDetails": {
+                    "references": {},
+                    "relatedParties": {
+                        "counterParty": {
+                            "name": "Customer s.r.o",
+                            "organisationIdentification": {
+                                "bankCode": "0800"
+                            },
+                            "account": {
+                                "accountNumber": "6346517389"
+                            }
+                        }
+                    },
+                    "remittanceInformation": {
+                        "creditorReferenceInformation": {
+                            "variable": "187042024",
+                            "constant": "0"
+                        },
+                        "originatorMessage": "LICENCE MICROSOFT 365 - 09/2024"
+                    }
+                }
+            }
+        }, {
+            "entryReference": "6827363019",
+            "amount": {
+                "value": 50000,
+                "currency": "CZK"
+            },
+            "creditDebitIndication": "CRDT",
+            "bookingDate": "2024-10-10T07:05:55.000+02:00",
+            "valueDate": "2024-10-10T07:05:54.000+02:00",
+            "bankTransactionCode": {
+                "code": "10000107000"
+            },
+            "entryDetails": {
+                "transactionDetails": {
+                    "references": {},
+                    "relatedParties": {
+                        "counterParty": {
+                            "name": "Provider s.r.o.",
+                            "organisationIdentification": {
+                                "bankCode": "2010"
+                            },
+                            "account": {
+                                "accountNumber": "2800061687"
+                            }
+                        }
+                    },
+                    "remittanceInformation": {
+                        "originatorMessage": "platba zpět"
+                    }
+                }
+            }
+        }]
+}
