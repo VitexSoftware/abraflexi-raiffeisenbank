@@ -15,56 +15,113 @@ use PHPUnit\Framework\TestCase;
 
 class TransactorTest extends TestCase
 {
-    public function testGetTransactions(): void
+    protected \AbraFlexi\RaiffeisenBank\Transactor $transactor;
+    private string $bankAccount;
+
+    protected function setUp(): void
     {
-        $bankAccount = '1234567890';
-        $transactor = new \AbraFlexi\RaiffeisenBank\Transactor($bankAccount);
-
-        $transactions = $transactor->getTransactions();
-
-        $this->assertIsArray($transactions);
-    }
-
-    public function testImport(): void
-    {
-        $bankAccount = '1234567890';
-        $transactor = new \AbraFlexi\RaiffeisenBank\Transactor($bankAccount);
-
-        $transactor->import();
-
-        // Add assertions to check the import process
-    }
-
-    public function testTakeTransactionData(): void
-    {
-        $bankAccount = '1234567890';
-        $transactor = new \AbraFlexi\RaiffeisenBank\Transactor($bankAccount);
-        $transactionData = [
-            // Provide sample transaction data here
-        ];
-
-        $transactor->takeTransactionData($transactionData);
-
-        // Add assertions to check the transaction data
+        $this->bankAccount = \Ease\Functions::cfg('ACCOUNT_NUMBER');
+        $this->transactor = new \AbraFlexi\RaiffeisenBank\Transactor($this->bankAccount);
     }
 
     public function testSetScope(): void
     {
-        $bankAccount = '1234567890';
-        $transactor = new \AbraFlexi\RaiffeisenBank\Transactor($bankAccount);
+        $this->transactor->setScope('today');
+        $this->assertInstanceOf(\DateTime::class, $this->transactor->getSince());
+        $this->assertInstanceOf(\DateTime::class, $this->transactor->getUntil());
 
-        $transactor->setScope('today');
-        $this->assertInstanceOf(\DateTime::class, $transactor->since);
-        $this->assertInstanceOf(\DateTime::class, $transactor->until);
+        $this->transactor->setScope('yesterday');
+        $this->assertInstanceOf(\DateTime::class, $this->transactor->getSince());
+        $this->assertInstanceOf(\DateTime::class, $this->transactor->getUntil());
 
-        $transactor->setScope('yesterday');
-        $this->assertInstanceOf(\DateTime::class, $transactor->since);
-        $this->assertInstanceOf(\DateTime::class, $transactor->until);
-
-        $transactor->setScope('auto');
-        $this->assertInstanceOf(\DateTime::class, $transactor->since);
-        $this->assertInstanceOf(\DateTime::class, $transactor->until);
+        $this->transactor->setScope('auto');
+        $this->assertInstanceOf(\DateTime::class, $this->transactor->getSince());
+        $this->assertInstanceOf(\DateTime::class, $this->transactor->getUntil());
 
         // Add more test cases for different scope values
+    }
+
+    public function testGetBank(): void
+    {
+        $bank = $this->transactor->getBank($this->bankAccount);
+
+        $this->assertInstanceOf(\AbraFlexi\BankovniUcet::class, $bank);
+    }
+
+    public function testGetxRequestId(): void
+    {
+        $xRequestId = $this->transactor->getxRequestId();
+
+        $this->assertIsString($xRequestId);
+    }
+
+    /**
+     * @depends testSetScope
+     */
+    #[Depends('testSetScope')]
+    public function testGetTransactions(): void
+    {
+        $this->transactor->setScope('yesterday');
+        $transactions = $this->transactor->getTransactions();
+
+        $this->assertIsArray($transactions);
+    }
+
+    /**
+     * @depends testSetScope
+     */
+    #[Depends('testSetScope')]
+    public function testImport(): void
+    {
+        $this->transactor->setScope('yesterday');
+        $imported = $this->transactor->import();
+
+        $this->assertIsArray($imported);
+    }
+
+    public function testTakeTransactionData(): void
+    {
+        $transactionData = json_decode(<<<'EOD'
+        {
+            "entryReference": "6828747987",
+            "amount": {
+                "value": 6776,
+                "currency": "CZK"
+            },
+            "creditDebitIndication": "CRDT",
+            "bookingDate": "2024-10-10T14:05:48.000+02:00",
+            "valueDate": "2024-10-10T14:05:47.000+02:00",
+            "bankTransactionCode": {
+                "code": "10000107000"
+            },
+            "entryDetails": {
+                "transactionDetails": {
+                    "references": {},
+                    "relatedParties": {
+                        "counterParty": {
+                            "name": "Customer s.r.o.",
+                            "organisationIdentification": {
+                                "bankCode": "0800"
+                            },
+                            "account": {
+                                "accountNumber": "6260979339"
+                            }
+                        }
+                    },
+                    "remittanceInformation": {
+                        "creditorReferenceInformation": {
+                            "variable": "197712024",
+                            "constant": "0"
+                        },
+                        "originatorMessage": "2024/09  IT"
+                    }
+                }
+            }
+        }
+EOD);
+
+        $this->transactor->takeTransactionData($transactionData);
+
+        $this->assertIsArray($this->transactor->getData());
     }
 }

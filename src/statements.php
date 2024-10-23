@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace AbraFlexi\RaiffeisenBank;
 
-\define('APP_NAME', 'RBStatements2AbraFlexi');
+\define('APP_NAME', 'Importer');
 
 require_once '../vendor/autoload.php';
 
@@ -26,10 +26,10 @@ $options = getopt('s::e::', ['scope::', 'env::']);
 
 // Get the path to the .env file
 $envfile = $options['env'] ?? '../.env';
-$scope = $options['scope'] ?? \Ease\Shared::cfg('STATEMENT_IMPORT_SCOPE', 'last_month');
 
 \Ease\Shared::init(['ABRAFLEXI_URL', 'ABRAFLEXI_LOGIN', 'ABRAFLEXI_PASSWORD', 'ABRAFLEXI_COMPANY', 'CERT_FILE', 'CERT_PASS', 'XIBMCLIENTID', 'ACCOUNT_NUMBER'], $envfile);
 BankClient::checkCertificatePresence(\Ease\Shared::cfg('CERT_FILE'));
 $engine = new Statementor(\Ease\Shared::cfg('ACCOUNT_NUMBER'));
+$scope = $options['scope'] ?? \Ease\Shared::cfg('IMPORT_SCOPE', 'last_month');
 $engine->setScope($scope);
 $engine->import();

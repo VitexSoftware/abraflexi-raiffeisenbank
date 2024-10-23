@@ -22,3 +22,7 @@ vendor: composer.json composer.lock ## Installs composer dependencies
 .PHONY: cs
 cs:
 	vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --diff --verbose
+
+.PHONY: phpunit
+phpunit:
+	vendor/bin/phpunit

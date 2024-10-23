@@ -71,8 +71,9 @@ class Statementor extends BankClient
         return $statements;
     }
 
-    public function import(): void
+    public function import(): array
     {
+        $imported = [];
         $statements = $this->getStatements();
 
         if ($statements) {
@@ -95,11 +96,13 @@ class Statementor extends BankClient
                     $this->setDataValue('vypisCisDokl', $statementXML->BkToCstmrStmt->Stmt->Id);
                     $this->setDataValue('cisSouhrnne', $statementXML->BkToCstmrStmt->Stmt->LglSeqNb);
                     $success = $this->insertTransactionToAbraFlexi($success);
+                    $imported[] = $this->getRecordIdent();
                 }
 
                 $this->addStatusMessage('Import done. '.$success.' of '.\count($statements).' imported');
             }
         }
+        return $imported;
     }
 
     /**
@@ -144,7 +147,7 @@ class Statementor extends BankClient
                     $this->setDataValue('varSym', (string) $ntry->NtryDtls->TxDtls->Refs->EndToEndId);
                 }
 
-                $transactionData['popis'] = (string) $ntry->NtryDtls->TxDtls->AddtlTxInf;
+                $this->setDataValue('popis', (string) $ntry->NtryDtls->TxDtls->AddtlTxInf);
 
                 if (property_exists($ntry->NtryDtls->TxDtls, 'RltdPties')) {
                     if (property_exists($ntry->NtryDtls->TxDtls->RltdPties, 'DbtrAcct')) {
@@ -164,100 +167,7 @@ class Statementor extends BankClient
 
         $this->setDataValue('source', $this->sourceString());
 
-        return $transactionData;
-    }
-
-    /**
-     * Prepare processing interval.
-     *
-     * @param string $scope
-     *
-     * @throws \Exception
-     */
-    public function setScope($scope): void
-    {
-        switch ($scope) {
-            case 'yesterday':
-                $this->since = (new \DateTime('yesterday'))->setTime(0, 0);
-                $this->until = (new \DateTime('yesterday'))->setTime(23, 59);
-
-                break;
-            case 'current_month':
-                $this->since = new \DateTime('first day of this month');
-                $this->until = new \DateTime();
-
-                break;
-            case 'last_month':
-                $this->since = new \DateTime('first day of last month');
-                $this->until = new \DateTime('last day of last month');
-
-                break;
-            case 'last_two_months':
-                $this->since = (new \DateTime('first day of last month'))->modify('-1 month');
-                $this->until = (new \DateTime('last day of last month'));
-
-                break;
-            case 'previous_month':
-                $this->since = new \DateTime('first day of -2 month');
-                $this->until = new \DateTime('last day of -2 month');
-
-                break;
-            case 'two_months_ago':
-                $this->since = new \DateTime('first day of -3 month');
-                $this->until = new \DateTime('last day of -3 month');
-
-                break;
-            case 'this_year':
-                $this->since = new \DateTime('first day of January '.date('Y'));
-                $this->until = new \DateTime('last day of December'.date('Y'));
-
-                break;
-            case 'January':  // 1
-            case 'February': // 2
-            case 'March':    // 3
-            case 'April':    // 4
-            case 'May':      // 5
-            case 'June':     // 6
-            case 'July':     // 7
-            case 'August':   // 8
-            case 'September':// 9
-            case 'October':  // 10
-            case 'November': // 11
-            case 'December': // 12
-                $this->since = new \DateTime('first day of '.$scope.' '.date('Y'));
-                $this->until = new \DateTime('last day of '.$scope.' '.date('Y'));
-
-                break;
-            case 'auto':
-                $latestRecord = $this->getColumnsFromAbraFlexi(['id', 'lastUpdate'], ['limit' => 1, 'order' => 'lastUpdate@A', 'source' => $this->sourceString(), 'banka' => $this->bank]);
-
-                if (\array_key_exists(0, $latestRecord) && \array_key_exists('lastUpdate', $latestRecord[0])) {
-                    $this->since = $latestRecord[0]['lastUpdate'];
-                } else {
-                    $this->addStatusMessage('Previous record for "auto since" not found. Defaulting to today\'s 00:00', 'warning');
-                    $this->since = (new \DateTime())->setTime(0, 0);
-                }
-
-                $this->until = new \DateTime(); // Now
-
-                break;
-
-            default:
-                if (strstr($scope, '>')) {
-                    [$begin, $end] = explode('>', $scope);
-                    $this->since = new \DateTime($begin);
-                    $this->until = new \DateTime($end);
-                } else {
-                    throw new \Exception('Unknown scope '.$scope);
-                }
-
-                break;
-        }
-
-        if ($scope !== 'auto' && $scope !== 'today' && $scope !== 'yesterday') {
-            $this->since = $this->since->setTime(0, 0);
-            $this->until = $this->until->setTime(0, 0);
-        }
+        return $this->getData();
     }
 
     /**
@@ -267,7 +177,7 @@ class Statementor extends BankClient
      */
     public function download(string $saveTo): array
     {
-        $downloaded = null;
+        $downloaded = [];
         $statements = $this->getStatements();
 
         if ($statements) {
