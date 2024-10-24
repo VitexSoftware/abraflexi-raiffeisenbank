@@ -86,6 +86,7 @@ class Transactor extends BankClient
         }
 
         $this->addStatusMessage('Import done. '.$success.' of '.\count($allTransactions).' imported');
+
         return $payments;
     }
 
