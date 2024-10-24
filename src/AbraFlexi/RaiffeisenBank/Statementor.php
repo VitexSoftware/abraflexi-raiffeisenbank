@@ -102,6 +102,7 @@ class Statementor extends BankClient
                 $this->addStatusMessage('Import done. '.$success.' of '.\count($statements).' imported');
             }
         }
+
         return $imported;
     }
 
