@@ -1,6 +1,6 @@
 {
     "image": "",
-    "name": "Raiffeisenbank Statements to AbraFlexi Events",
+    "name": "Import Raiffeisen bank Statements to AbraFlexi Events",
     "description": "Download Raiffeisenbank PDF Statements and import them to AbraFlexi events",
     "executable": "abraflexi-raiffeisenbank-events",
     "setup": "abraflexi-raiffeisenbank-setup",
