@@ -1,6 +1,6 @@
 {
     "image": "",
-    "name": "Raiffeisenbank Transactions for AbraFlexi",
+    "name": "Raiffeisenbank Transactions importer for AbraFlexi",
     "description": "Raiffeisen Bank Transaction puller",
     "executable": "abraflexi-raiffeisenbank-transactions",
     "setup": "abraflexi-raiffeisenbank-setup",
