@@ -49,7 +49,12 @@
         "IMPORT_SCOPE": {
             "type": "text",
             "description": "Time scope of transactions downloaded",
-            "defval": "auto"
+            "defval": "yesterday"
+        },
+        "STATEMENT_LINE": {
+            "type": "text",
+            "description": "Bank Statement line",
+            "defval": "ADDITIONAL"
         },
         "XIBMCLIENTID": {
             "type": "text",

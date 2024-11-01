@@ -60,6 +60,11 @@
             "type": "text",
             "description": "AbraFlexi Event",
             "defval": "BankStatement"
+        },
+        "STATEMENT_LINE": {
+            "type": "text",
+            "description": "Bank Statement line",
+            "defval": "MAIN"
         }
     },
     "multiflexi": ""
