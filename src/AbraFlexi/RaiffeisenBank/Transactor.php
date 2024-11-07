@@ -70,7 +70,7 @@ class Transactor extends BankClient
 
             $this->addStatusMessage('Exception when calling GetTransactionListApi->getTransactionList: '.$errorMessage, 'error', $apiInstance);
 
-            exit(intval($errorCode));
+            exit((int) $errorCode);
         }
 
         return $transactions;
@@ -251,12 +251,19 @@ class Transactor extends BankClient
                 $latestRecord = $this->getColumnsFromAbraFlexi(['id', 'lastUpdate'], ['limit' => 1, 'order' => 'lastUpdate@A', 'source' => $this->sourceString(), 'banka' => $this->bank]);
 
                 if (\array_key_exists(0, $latestRecord) && \array_key_exists('lastUpdate', $latestRecord[0])) {
-                    $this->since = $latestRecord[0]['lastUpdate'];
+                    $lastUpdate = $latestRecord[0]['lastUpdate'];
+                    $maxDate = (new \DateTime('89 days ago'))->setTime(0, 0);
+
+                    if ($lastUpdate < $maxDate) {
+                        $this->since = $maxDate;
+                    } else {
+                        $this->since = $lastUpdate;
+                    }
                 } else {
-                    $this->since = (new \DateTime('89 days ago'))->setTime(0, 0);
+                    $this->since = (new \DateTime('89 days ago'))->setTime(23, 59);
                 }
 
-                $this->until = (new \DateTime('now'))->setTime(0, 0);
+                $this->until = (new \DateTime('now'))->setTime(23, 59);
 
                 break;
 
