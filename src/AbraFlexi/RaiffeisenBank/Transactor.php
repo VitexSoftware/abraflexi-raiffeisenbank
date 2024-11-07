@@ -239,13 +239,26 @@ class Transactor extends BankClient
         switch ($scope) {
             case 'today':
                 $this->since = (new \DateTime())->setTime(0, 0);
-                $this->until = (new \DateTime())->setTime(23, 59);
+                $this->until = (new \DateTime())->setTime(23, 59, 59, 999);
 
                 break;
             case 'yesterday':
                 $this->since = (new \DateTime('yesterday'))->setTime(0, 0);
                 $this->until = (new \DateTime('yesterday'))->setTime(23, 59, 59, 999);
 
+                break;
+            case 'current_month':
+                $this->since = new \DateTime('first day of this month');
+                $this->until = new \DateTime();
+
+                break;
+            case 'last_month':
+                $this->since = new \DateTime('first day of last month');
+                $this->until = new \DateTime('last day of last month');
+                break;
+            case 'last_two_months':
+                $this->since = (new \DateTime('first day of last month'))->modify('-1 month');
+                $this->until = (new \DateTime('last day of last month'));
                 break;
             case 'auto':
                 $latestRecord = $this->getColumnsFromAbraFlexi(['id', 'lastUpdate'], ['limit' => 1, 'order' => 'lastUpdate@A', 'source' => $this->sourceString(), 'banka' => $this->bank]);
@@ -260,10 +273,10 @@ class Transactor extends BankClient
                         $this->since = $lastUpdate;
                     }
                 } else {
-                    $this->since = (new \DateTime('89 days ago'))->setTime(23, 59);
+                    $this->since = (new \DateTime('89 days ago'))->setTime(23, 59, 59, 999);
                 }
 
-                $this->until = (new \DateTime('now'))->setTime(23, 59);
+                $this->until = (new \DateTime('now'))->setTime(23, 59, 59, 999);
 
                 break;
 
@@ -275,7 +288,7 @@ class Transactor extends BankClient
                 } else {
                     if (preg_match('/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/', $scope)) {
                         $this->since = new \DateTime($scope);
-                        $this->until = (new \DateTime($scope))->setTime(23, 59);
+                        $this->until = (new \DateTime($scope))->setTime(23, 59, 59, 999);
 
                         break;
                     }
@@ -288,7 +301,7 @@ class Transactor extends BankClient
 
         if ($scope !== 'auto' && $scope !== 'today' && $scope !== 'yesterday' && strstr($scope, '-')) {
             $this->since = $this->since->setTime(0, 0);
-            $this->until = $this->until->setTime(23, 59);
+            $this->until = $this->until->setTime(23, 59, 59, 999);
         }
     }
 }
