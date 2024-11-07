@@ -20,7 +20,6 @@ require_once '../vendor/autoload.php';
 /**
  * Get today's statements list.
  */
-
 // Parse command line arguments
 $options = getopt('s::e::', ['scope::', 'env::']);
 

@@ -78,7 +78,7 @@ class Statementor extends BankClient
 
             $this->addStatusMessage('Exception when calling GetTransactionListApi->getTransactionList: '.$errorMessage, 'error', $apiInstance);
 
-            exit(intval($errorCode));
+            exit((int) $errorCode);
         }
 
         return $statements;
