@@ -22,7 +22,7 @@ class StatementorTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->bankAccount = \Ease\Functions::cfg('ACCOUNT_NUMBER');
+        $this->bankAccount = \Ease\Shared::cfg('ACCOUNT_NUMBER');
         $this->statementor = new \AbraFlexi\RaiffeisenBank\Statementor($this->bankAccount);
     }
 

@@ -19,4 +19,4 @@ require_once \dirname(__DIR__).'/vendor/autoload.php';
 $apiInstance = new \VitexSoftware\Raiffeisenbank\PremiumAPI\GetAccountsApi();
 $x_request_id = time(); // string | Unique request id provided by consumer application for reference and auditing.
 
-\AbraFlexi\RaiffeisenBank\Transactor::checkCertificatePresence(\Ease\Functions::cfg('CERT_FILE'));
+\AbraFlexi\RaiffeisenBank\Transactor::checkCertificatePresence(\Ease\Shared::cfg('CERT_FILE'));

@@ -41,7 +41,7 @@ class Statementor extends BankClient
                     'page' => ++$page,
                     'size' => 60,
                     'currency' => $this->getCurrencyCode(),
-                    'statementLine' => \Ease\Functions::cfg('STATEMENT_LINE', 'MAIN'),
+                    'statementLine' => \Ease\Shared::cfg('STATEMENT_LINE', 'MAIN'),
                     'dateFrom' => $this->since->format(self::$dateFormat),
                     'dateTo' => $this->until->format(self::$dateFormat)]);
 
@@ -52,11 +52,11 @@ class Statementor extends BankClient
                     $result['lastPage'] = true;
                 }
 
-                if (\array_key_exists('statements', $result)) {
+                if (\array_key_exists('statements', (array) $result)) {
                     $statements = array_merge($statements, $result['statements']);
                 }
 
-                if (\array_key_exists('last', $result) && $result['last'] === true) {
+                if (\array_key_exists('last', (array) $result) && $result['last'] === true) {
                     $stop = true;
                 }
 
@@ -122,21 +122,21 @@ class Statementor extends BankClient
     /**
      * Parse "Ntry" element into \AbraFlexi\Banka data.
      *
-     * @param SimpleXMLElement $ntry
+     * @param \SimpleXMLElement $ntry
      *
      * @return array
      */
     public function ntryToAbraFlexi($ntry)
     {
-        $this->setDataValue('typDokl', \AbraFlexi\RO::code(\Ease\Functions::cfg('TYP_DOKLADU', 'STANDARD')));
+        $this->setDataValue('typDokl', \AbraFlexi\Functions::code(\Ease\Shared::cfg('TYP_DOKLADU', 'STANDARD')));
         $this->setDataValue('bezPolozek', true);
         $this->setDataValue('stavUzivK', 'stavUziv.nactenoEl');
-        $this->setDataValue('poznam', 'Import Job '.\Ease\Functions::cfg('JOB_ID', 'n/a'));
+        $this->setDataValue('poznam', 'Import Job '.\Ease\Shared::cfg('JOB_ID', 'n/a'));
 
         if ((string) $ntry->CdtDbtInd === 'CRDT') {
-            $this->setDataValue('rada', \AbraFlexi\RO::code('BANKA+'));
+            $this->setDataValue('rada', \AbraFlexi\Functions::code('BANKA+'));
         } else {
-            $this->setDataValue('rada', \AbraFlexi\RO::code('BANKA-'));
+            $this->setDataValue('rada', \AbraFlexi\Functions::code('BANKA-'));
         }
 
         $moveTrans = ['DBIT' => 'typPohybu.vydej', 'CRDT' => 'typPohybu.prijem'];
@@ -145,7 +145,7 @@ class Statementor extends BankClient
         $this->setDataValue('datVyst', \AbraFlexi\RO::dateToFlexiDate(new \DateTime((string) $ntry->BookgDt->DtTm)));
         $this->setDataValue('sumOsv', abs((float) ((string) $ntry->Amt)));
         $this->setDataValue('banka', $this->bank);
-        $this->setDataValue('mena', \AbraFlexi\RO::code((string) $ntry->Amt->attributes()->Ccy));
+        $this->setDataValue('mena', \AbraFlexi\Functions::code((string) $ntry->Amt->attributes()->Ccy));
 
         if (property_exists($ntry, 'NtryDtls')) {
             if (property_exists($ntry->NtryDtls, 'TxDtls')) {
@@ -154,7 +154,7 @@ class Statementor extends BankClient
                 if ((int) $conSym) {
                     $conSym = sprintf('%04d', $conSym);
                     $this->ensureKSExists($conSym);
-                    $this->setDataValue('konSym', \AbraFlexi\RO::code($conSym));
+                    $this->setDataValue('konSym', \AbraFlexi\Functions::code($conSym));
                 }
 
                 if (property_exists($ntry->NtryDtls->TxDtls->Refs, 'EndToEndId')) {
@@ -173,7 +173,7 @@ class Statementor extends BankClient
 
                 if (property_exists($ntry->NtryDtls->TxDtls, 'RltdAgts')) {
                     if (property_exists($ntry->NtryDtls->TxDtls->RltdAgts->DbtrAgt, 'FinInstnId')) {
-                        $this->setDataValue('smerKod', \AbraFlexi\RO::code((string) $ntry->NtryDtls->TxDtls->RltdAgts->DbtrAgt->FinInstnId->Othr->Id));
+                        $this->setDataValue('smerKod', \AbraFlexi\Functions::code((string) $ntry->NtryDtls->TxDtls->RltdAgts->DbtrAgt->FinInstnId->Othr->Id));
                     }
                 }
             }

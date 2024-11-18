@@ -112,7 +112,7 @@ class Transactor extends BankClient
     {
         //        $this->setMyKey(\AbraFlexi\RO::code('RB' . $transactionData->entryReference));
         $this->setDataValue('bezPolozek', true);
-        $this->setDataValue('typDokl', \AbraFlexi\RO::code(\Ease\Functions::cfg('TYP_DOKLADU', 'STANDARD')));
+        $this->setDataValue('typDokl', \AbraFlexi\RO::code(\Ease\Shared::cfg('TYP_DOKLADU', 'STANDARD')));
         $moveTrans = [
             'DBIT' => 'typPohybu.vydej',
             'CRDT' => 'typPohybu.prijem',
@@ -145,7 +145,7 @@ class Transactor extends BankClient
             $this->setDataValue('popis', $transactionData->entryDetails->transactionDetails->remittanceInformation->originatorMessage);
         }
 
-        $this->setDataValue('poznam', 'Import Job '.\Ease\Functions::cfg('JOB_ID', 'n/a'));
+        $this->setDataValue('poznam', 'Import Job '.\Ease\Shared::cfg('JOB_ID', 'n/a'));
         $this->setDataValue('sumOsv', abs($transactionData->amount->value));
         // $this->setDataValue('sumCelkem', abs($transactionData->amount->value));
         $this->setDataValue('stavUzivK', 'stavUziv.nactenoEl');
@@ -255,10 +255,12 @@ class Transactor extends BankClient
             case 'last_month':
                 $this->since = new \DateTime('first day of last month');
                 $this->until = new \DateTime('last day of last month');
+
                 break;
             case 'last_two_months':
                 $this->since = (new \DateTime('first day of last month'))->modify('-1 month');
                 $this->until = (new \DateTime('last day of last month'));
+
                 break;
             case 'auto':
                 $latestRecord = $this->getColumnsFromAbraFlexi(['id', 'lastUpdate'], ['limit' => 1, 'order' => 'lastUpdate@A', 'source' => $this->sourceString(), 'banka' => $this->bank]);
