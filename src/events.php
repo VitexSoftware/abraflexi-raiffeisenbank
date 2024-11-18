@@ -26,8 +26,8 @@ $envfile = $options['env'] ?? '../.env';
 
 $scope = $options['scope'] ?? \Ease\Shared::cfg('IMPORT_SCOPE', 'last_month');
 
-BankClient::checkCertificatePresence(\Ease\Functions::cfg('CERT_FILE'));
-$engine = new Statementor(\Ease\Functions::cfg('ACCOUNT_NUMBER'));
+BankClient::checkCertificatePresence(\Ease\Shared::cfg('CERT_FILE'));
+$engine = new Statementor(\Ease\Shared::cfg('ACCOUNT_NUMBER'));
 $engine->setScope($scope);
 
 $eventor = new Event();

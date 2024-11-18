@@ -8,9 +8,9 @@ Homepage: https://github.com/VitexSoftware/abraflexi-raiffeisenbank
 
 Package: abraflexi-raiffeisenbank
 Architecture: all
-Depends: ${misc:Depends}, php-spojenet-abraflexi, php-vitexsoftware-rbczpremiumapi
+Depends: ${misc:Depends}, php-spojenet-abraflexi (>=3.3), php-vitexsoftware-rbczpremiumapi (>=1.2)
 Suggests: abraflexi-server,abraflexi-client-config, abraflexi-digest, abraflexi-matcher, abraflexi-reminder, abraflexi-contract-invoices, multiflexi
-Description: Raiffeisen Bank Transaction puller for AbraFlexi 
+Description: Raiffeisen Bank Transaction puller for AbraFlexi
  Download transactions into AbraFlexi
 
 Package: multiflexi-abraflexi-raiffeisenbank
@@ -18,5 +18,3 @@ Architecture: all
 Depends: abraflexi-raiffeisenbank, multiflexi-raiffeisenbank
 Description: Add Raiffeisen Bank Transaction puller for AbraFlexi to MultiFlexi
  Allow use of Raiffeisen Bank Transaction puller for AbraFlexi in MultiFlexi environment
-
-

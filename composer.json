@@ -10,8 +10,8 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "spojenet/flexibee": "main-dev",
-        "vitexsoftware/rbczpremiumapi": "dev-main"
+        "spojenet/flexibee": "^3.3",
+        "vitexsoftware/rbczpremiumapi": "^1.2"
     },
     "autoload": {
         "psr-4": {
@@ -28,7 +28,7 @@
     "require-dev": {
         "phpunit/phpunit": "*",
         "phpstan/phpstan": "*",
-        "friendsofphp/php-cs-fixer": "^3.61",
+        "friendsofphp/php-cs-fixer": "^3.64",
         "ergebnis/composer-normalize": "^2.43",
         "ergebnis/php-cs-fixer-config": "^6.34"
     },

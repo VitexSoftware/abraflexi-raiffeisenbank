@@ -20,7 +20,7 @@ class TransactorTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->bankAccount = \Ease\Functions::cfg('ACCOUNT_NUMBER');
+        $this->bankAccount = \Ease\Shared::cfg('ACCOUNT_NUMBER');
         $this->transactor = new \AbraFlexi\RaiffeisenBank\Transactor($this->bankAccount);
     }
 

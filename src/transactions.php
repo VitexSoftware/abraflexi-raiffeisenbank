@@ -26,8 +26,8 @@ $options = getopt('s::e::', ['scope::', 'env::']);
 $envfile = $options['env'] ?? '../.env';
 
 \Ease\Shared::init(['ABRAFLEXI_URL', 'ABRAFLEXI_LOGIN', 'ABRAFLEXI_PASSWORD', 'ABRAFLEXI_COMPANY', 'CERT_FILE', 'CERT_PASS', 'XIBMCLIENTID', 'ACCOUNT_NUMBER'], $envfile);
-Transactor::checkCertificatePresence(\Ease\Functions::cfg('CERT_FILE'));
-$engine = new Transactor(\Ease\Functions::cfg('ACCOUNT_NUMBER'));
+Transactor::checkCertificatePresence(\Ease\Shared::cfg('CERT_FILE'));
+$engine = new Transactor(\Ease\Shared::cfg('ACCOUNT_NUMBER'));
 $scope = $options['scope'] ?? \Ease\Shared::cfg('IMPORT_SCOPE', 'last_month');
 $engine->setScope($scope);
 $engine->import();
