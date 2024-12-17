@@ -55,6 +55,12 @@
             "type": "text",
             "description": "ClientID",
             "defval": ""
+        },
+        "EASE_LOGGER": {
+            "type": "string",
+            "description": "write log messages using",
+            "defval": "console|syslog",
+            "required": false
         }
     },
     "multiflexi": ""

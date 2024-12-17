@@ -131,7 +131,7 @@ class Statementor extends BankClient
         $this->setDataValue('typDokl', \AbraFlexi\Functions::code(\Ease\Shared::cfg('TYP_DOKLADU', 'STANDARD')));
         $this->setDataValue('bezPolozek', true);
         $this->setDataValue('stavUzivK', 'stavUziv.nactenoEl');
-        $this->setDataValue('poznam', 'Import Job '.\Ease\Shared::cfg('JOB_ID', 'n/a'));
+        $this->setDataValue('poznam', 'Import Job '.\Ease\Shared::cfg('MULTIFLEXI_JOB_ID', 'n/a'));
 
         if ((string) $ntry->CdtDbtInd === 'CRDT') {
             $this->setDataValue('rada', \AbraFlexi\Functions::code('BANKA+'));

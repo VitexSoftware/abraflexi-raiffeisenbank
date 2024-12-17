@@ -1,8 +1,15 @@
-abraflexi-raiffeisenbank (1.3.4) UNRELEASED; urgency=medium
+abraflexi-raiffeisenbank (1.3.5) UNRELEASED; urgency=medium
 
+  * remittanceInformation parsing fixed
+
+ --  <vitezslav.dvorak@spojenet.cz>  Tue, 17 Dec 2024 20:46:41 +0100
+
+abraflexi-raiffeisenbank (1.3.4) unstable; urgency=medium
+
+  [ vitex ]
   * Deps update, code stabilization
 
- -- vitex <info@vitexsoftware.cz>  Mon, 18 Nov 2024 07:58:11 +0100
+ --  <vitezslav.dvorak@spojenet.cz>  Tue, 17 Dec 2024 20:46:07 +0100
 
 abraflexi-raiffeisenbank (1.3.3) unstable; urgency=medium
 

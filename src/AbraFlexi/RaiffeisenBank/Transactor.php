@@ -121,18 +121,24 @@ class Transactor extends BankClient
         $this->setDataValue('cisDosle', $transactionData->entryReference);
 
         if (property_exists($transactionData->entryDetails, 'transactionDetails')) {
-            if (property_exists($transactionData->entryDetails->transactionDetails, 'remittanceInformation') && property_exists($transactionData->entryDetails->transactionDetails->remittanceInformation, 'creditorReferenceInformation')) {
-                if (property_exists($transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation, 'variable')) {
-                    $this->setDataValue('varSym', $transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation->variable);
+            if (property_exists($transactionData->entryDetails->transactionDetails, 'remittanceInformation')) {
+                if (property_exists($transactionData->entryDetails->transactionDetails->remittanceInformation, 'originatorMessage')) {
+                    $this->setDataValue('popis', $transactionData->entryDetails->transactionDetails->remittanceInformation->originatorMessage);
                 }
 
-                if (property_exists($transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation, 'constant')) {
-                    $conSym = $transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation->constant;
+                if (property_exists($transactionData->entryDetails->transactionDetails->remittanceInformation, 'creditorReferenceInformation')) {
+                    if (property_exists($transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation, 'variable')) {
+                        $this->setDataValue('varSym', $transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation->variable);
+                    }
 
-                    if ((int) $conSym) {
-                        $conSym = sprintf('%04d', $conSym);
-                        $this->ensureKSExists($conSym);
-                        $this->setDataValue('konSym', \AbraFlexi\RO::code($conSym));
+                    if (property_exists($transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation, 'constant')) {
+                        $conSym = $transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation->constant;
+
+                        if ((int) $conSym) {
+                            $conSym = sprintf('%04d', $conSym);
+                            $this->ensureKSExists($conSym);
+                            $this->setDataValue('konSym', \AbraFlexi\RO::code($conSym));
+                        }
                     }
                 }
             }
@@ -141,11 +147,8 @@ class Transactor extends BankClient
         $this->setDataValue('datVyst', $transactionData->bookingDate);
 
         // $this->setDataValue('duzpPuv', $transactionData->valueDate);
-        if (property_exists($transactionData->entryDetails->transactionDetails->remittanceInformation, 'originatorMessage')) {
-            $this->setDataValue('popis', $transactionData->entryDetails->transactionDetails->remittanceInformation->originatorMessage);
-        }
 
-        $this->setDataValue('poznam', 'Import Job '.\Ease\Shared::cfg('JOB_ID', 'n/a'));
+        $this->setDataValue('poznam', 'Import Job '.\Ease\Shared::cfg('MULTIFLEXI_JOB_ID', 'n/a'));
         $this->setDataValue('sumOsv', abs($transactionData->amount->value));
         // $this->setDataValue('sumCelkem', abs($transactionData->amount->value));
         $this->setDataValue('stavUzivK', 'stavUziv.nactenoEl');
