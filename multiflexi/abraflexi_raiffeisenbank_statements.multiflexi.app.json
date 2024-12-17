@@ -36,6 +36,16 @@
             "description": "Bank Account Number",
             "defval": ""
         },
+        "BANKA+": {
+            "type": "text",
+            "description": "Num row for income",
+            "defval": ""
+        },
+        "BANKA-": {
+            "type": "text",
+            "description": "Num row for epense",
+            "defval": ""
+        },
         "CERT_FILE": {
             "type": "text",
             "description": "Certificate file",
@@ -60,7 +70,14 @@
             "type": "text",
             "description": "ClientID",
             "defval": ""
+        },
+        "EASE_LOGGER": {
+            "type": "string",
+            "description": "write log messages using",
+            "defval": "console|syslog",
+            "required": false
         }
+        
     },
     "multiflexi": ""
 }

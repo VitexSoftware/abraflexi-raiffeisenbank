@@ -65,6 +65,12 @@
             "type": "text",
             "description": "Bank Statement line",
             "defval": "MAIN"
+        },
+        "EASE_LOGGER": {
+            "type": "string",
+            "description": "write log messages using",
+            "defval": "console|syslog",
+            "required": false
         }
     },
     "multiflexi": ""
