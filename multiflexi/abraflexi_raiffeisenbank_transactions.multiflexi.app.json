@@ -61,6 +61,18 @@
             "description": "write log messages using",
             "defval": "console|syslog",
             "required": false
+        },
+        "APP_DEBUG": {
+            "type": "checkbox",
+            "description": "Show debug messages",
+            "defval": "False",
+            "required": true
+        },
+        "RESULT_FILE": {
+            "type": "string",
+            "description": "write output json data to",
+            "defval": "env_report.json",
+            "required": false
         }
     },
     "multiflexi": ""

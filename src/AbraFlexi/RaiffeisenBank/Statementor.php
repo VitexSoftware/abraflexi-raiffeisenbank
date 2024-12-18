@@ -109,7 +109,7 @@ class Statementor extends BankClient
                     $this->setDataValue('vypisCisDokl', $statementXML->BkToCstmrStmt->Stmt->Id);
                     $this->setDataValue('cisSouhrnne', $statementXML->BkToCstmrStmt->Stmt->LglSeqNb);
                     $success = $this->insertTransactionToAbraFlexi($success);
-                    $imported[] = $this->getRecordIdent();
+                    $imported[$this->getRecordIdent()] = $this->getDataValue('buc').' '.$this->getDataValue('sumOsv').' '.$this->getDataValue('mena');
                 }
 
                 $this->addStatusMessage('Import done. '.$success.' of '.\count($statements).' imported');
