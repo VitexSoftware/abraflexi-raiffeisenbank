@@ -56,7 +56,7 @@ class Transactor extends BankClient
                     $transactions = array_merge($transactions, $result['transactions']);
                 }
             } while ($result['lastPage'] === false);
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
             preg_match('/cURL error ([0-9]+)/', $errorMessage, $matches);
 
