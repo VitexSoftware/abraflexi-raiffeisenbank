@@ -76,7 +76,7 @@ if ($event) {
     $eventor->setDataValue('druhUdalK', 'druhUdal.udal');
 
     if ($eventor->recordExists() === false) {
-        $eventor->sync();
-        $eventor->addStatusMessage(sprintf(_('Event Type %s %s created'), $event, $eventor->getRecordCode()), $eventor->success());
+        $result = $eventor->sync();
+        $eventor->addStatusMessage(sprintf(_('Event Type %s %s created'), $event, $eventor->getRecordCode()),  $result ? 'success' : 'error');
     }
 }
