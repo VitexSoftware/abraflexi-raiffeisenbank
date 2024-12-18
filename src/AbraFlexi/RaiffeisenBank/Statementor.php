@@ -122,6 +122,9 @@ class Statementor extends BankClient
     /**
      * Parse "Ntry" element into \AbraFlexi\Banka data.
      *
+     * @see https://www.clearstream.com/resource/blob/3738792/fa564142233c781ec2c2126a54289561/swift-ug-cbpr-data.pdf
+     * @see https://demo.flexibee.eu/c/demo/banka/properties
+     *
      * @param \SimpleXMLElement $ntry
      *
      * @return array
@@ -131,7 +134,7 @@ class Statementor extends BankClient
         $this->setDataValue('typDokl', \AbraFlexi\Functions::code(\Ease\Shared::cfg('TYP_DOKLADU', 'STANDARD')));
         $this->setDataValue('bezPolozek', true);
         $this->setDataValue('stavUzivK', 'stavUziv.nactenoEl');
-        $this->setDataValue('poznam', 'Import Job '.\Ease\Shared::cfg('MULTIFLEXI_JOB_ID', 'n/a'));
+        $this->setDataValue('poznam', 'Import Job '.\Ease\Shared::cfg('MULTIFLEXI_JOB_ID', \Ease\Shared::cfg('JOB_ID', 'n/a')));
 
         if ((string) $ntry->CdtDbtInd === 'CRDT') {
             $this->setDataValue('rada', \AbraFlexi\Functions::code('BANKA+'));
@@ -147,8 +150,8 @@ class Statementor extends BankClient
         $this->setDataValue('banka', $this->bank);
         $this->setDataValue('mena', \AbraFlexi\Functions::code((string) $ntry->Amt->attributes()->Ccy));
 
-        if (property_exists($ntry, 'NtryDtls')) {
-            if (property_exists($ntry->NtryDtls, 'TxDtls')) {
+        if (\property_exists($ntry, 'NtryDtls')) {
+            if (\property_exists($ntry->NtryDtls, 'TxDtls')) {
                 $conSym = (string) $ntry->NtryDtls->TxDtls->Refs->InstrId;
 
                 if ((int) $conSym) {
@@ -163,15 +166,19 @@ class Statementor extends BankClient
 
                 $this->setDataValue('popis', (string) $ntry->NtryDtls->TxDtls->AddtlTxInf);
 
-                if (property_exists($ntry->NtryDtls->TxDtls, 'RltdPties')) {
-                    if (property_exists($ntry->NtryDtls->TxDtls->RltdPties, 'DbtrAcct')) {
-                        $this->setDataValue('buc', (string) $ntry->NtryDtls->TxDtls->RltdPties->DbtrAcct->Id->Othr->Id);
+                if (\property_exists($ntry->NtryDtls->TxDtls, 'RltdPties')) {
+                    if (property_exists($ntry->NtryDtls->TxDtls->RltdPties, 'CdtrAcct')) {
+                        $this->setDataValue('buc', (string) $ntry->NtryDtls->TxDtls->RltdPties->CdtrAcct->Id->Othr->Id);
+                        $this->setDataValue('nazFirmy', (string) $ntry->NtryDtls->TxDtls->RltdPties->CdtrAcct->Nm);
                     }
 
-                    $this->setDataValue('nazFirmy', (string) $ntry->NtryDtls->TxDtls->RltdPties->DbtrAcct->Nm);
+                    if (\property_exists($ntry->NtryDtls->TxDtls->RltdPties, 'DbtrAcct')) {
+                        $this->setDataValue('buc', (string) $ntry->NtryDtls->TxDtls->RltdPties->DbtrAcct->Id->Othr->Id);
+                        $this->setDataValue('nazFirmy', (string) $ntry->NtryDtls->TxDtls->RltdPties->DbtrAcct->Nm);
+                    }
                 }
 
-                if (property_exists($ntry->NtryDtls->TxDtls, 'RltdAgts')) {
+                if (\property_exists($ntry->NtryDtls->TxDtls, 'RltdAgts')) {
                     if (property_exists($ntry->NtryDtls->TxDtls->RltdAgts->DbtrAgt, 'FinInstnId')) {
                         $this->setDataValue('smerKod', \AbraFlexi\Functions::code((string) $ntry->NtryDtls->TxDtls->RltdAgts->DbtrAgt->FinInstnId->Othr->Id));
                     }

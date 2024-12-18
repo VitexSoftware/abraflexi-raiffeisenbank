@@ -1,8 +1,15 @@
-abraflexi-raiffeisenbank (1.3.5) UNRELEASED; urgency=medium
+abraflexi-raiffeisenbank (1.3.6) UNRELEASED; urgency=medium
 
+  * remote account for expense added
+
+ -- vitex <info@vitexsoftware.cz>  Wed, 18 Dec 2024 16:32:40 +0100
+
+abraflexi-raiffeisenbank (1.3.5) unstable; urgency=medium
+
+  [ vitezslav.dvorak@spojenet.cz ]
   * remittanceInformation parsing fixed
 
- --  <vitezslav.dvorak@spojenet.cz>  Tue, 17 Dec 2024 20:46:41 +0100
+ -- vitex <info@vitexsoftware.cz>  Wed, 18 Dec 2024 16:32:05 +0100
 
 abraflexi-raiffeisenbank (1.3.4) unstable; urgency=medium
 
