@@ -35,7 +35,7 @@ $engine = new Statementor(\Ease\Shared::cfg('ACCOUNT_NUMBER'));
 $scope = $options['scope'] ?? \Ease\Shared::cfg('IMPORT_SCOPE', 'last_month');
 $engine->setScope($scope);
 
-if (Shared::cfg('APP_DEBUG', false)) {
+if (\Ease\Shared::cfg('APP_DEBUG', false)) {
     $engine->logBanner($engine->getAccount().' '.$engine->getCurrencyCode(), 'Scope: '.$scope);
 }
 
