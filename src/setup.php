@@ -77,6 +77,6 @@ if ($event) {
 
     if ($eventor->recordExists() === false) {
         $result = $eventor->sync();
-        $eventor->addStatusMessage(sprintf(_('Event Type %s %s created'), $event, $eventor->getRecordCode()),  $result ? 'success' : 'error');
+        $eventor->addStatusMessage(sprintf(_('Event Type %s %s created'), $event, $eventor->getRecordCode()), $result ? 'success' : 'error');
     }
 }
