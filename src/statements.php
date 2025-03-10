@@ -22,7 +22,7 @@ require_once '../vendor/autoload.php';
  */
 // Parse command line arguments
 $options = getopt('s::e::o:', ['scope::', 'env::', 'output:']);
-$exitcode = 0;
+
 // Get the path to the .env file
 $envfile = $options['env'] ?? '../.env';
 
@@ -41,11 +41,14 @@ if (\Ease\Shared::cfg('APP_DEBUG', false)) {
 
 $report = [
     'account' => \Ease\Shared::cfg('ACCOUNT_NUMBER'),
+    'line' => $engine->getStatementLine(),
     'scope' => $scope,
     'until' => $engine->getUntil()->format('Y-m-d'),
     'since' => $engine->getSince()->format('Y-m-d'),
     'banka' => $engine->import(),
+    'exitcode' => $engine->getExitCode(),
 ];
+$exitcode = $engine->getExitCode();
 
 $written = file_put_contents($destination, json_encode($report, \Ease\Shared::cfg('DEBUG') ? \JSON_PRETTY_PRINT : 0));
 $engine->addStatusMessage(sprintf(_('Saving result to %s'), $destination), $written ? 'success' : 'error');
