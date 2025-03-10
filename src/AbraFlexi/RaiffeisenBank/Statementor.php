@@ -20,6 +20,21 @@ namespace AbraFlexi\RaiffeisenBank;
  */
 class Statementor extends BankClient
 {
+    private string $statementLine = 'MAIN';
+    private int $exitCode = 0;
+
+    /**
+     * Take care about Statements.
+     *
+     * @param string                $bankAccount
+     * @param array<string, string> $options
+     */
+    public function __construct($bankAccount, $options = [])
+    {
+        parent::__construct($bankAccount, $options);
+        $this->setupProperty($options, 'statementLine', 'STATEMENT_LINE');
+    }
+
     /**
      * Obtain Transactions from RB.
      *
@@ -41,14 +56,14 @@ class Statementor extends BankClient
                     'page' => ++$page,
                     'size' => 60,
                     'currency' => $this->getCurrencyCode(),
-                    'statementLine' => \Ease\Shared::cfg('STATEMENT_LINE', 'MAIN'),
+                    'statementLine' => $this->statementLine,
                     'dateFrom' => $this->since->format(self::$dateFormat),
                     'dateTo' => $this->until->format(self::$dateFormat)]);
 
                 $result = $apiInstance->getStatements($this->getxRequestId(), $requestBody, $page);
 
                 if (empty($result)) {
-                    $this->addStatusMessage(sprintf(_('No transactions from %s to %s'), $this->since->format(self::$dateFormat), $this->until->format(self::$dateFormat)));
+                    $this->addStatusMessage(sprintf(_('No Statements from %s to %s'), $this->since->format(self::$dateFormat), $this->until->format(self::$dateFormat)));
                     $result['lastPage'] = true;
                 }
 
@@ -76,12 +91,17 @@ class Statementor extends BankClient
                 $errorCode = 2;
             }
 
-            $this->addStatusMessage('Exception when calling GetTransactionListApi->getTransactionList: '.$errorMessage, 'error', $apiInstance);
+            $this->addStatusMessage('Exception when calling GetStatementsRequest: '.$errorMessage, 'error', $apiInstance);
 
-            exit((int) $errorCode);
+            $this->exitCode = (int) $errorCode;
         }
 
         return $statements;
+    }
+
+    public function getStatementLine(): string
+    {
+        return $this->statementLine;
     }
 
     public function import(): array
@@ -231,5 +251,10 @@ class Statementor extends BankClient
         }
 
         return $downloaded;
+    }
+
+    public function getExitCode(): int
+    {
+        return $this->exitCode;
     }
 }

@@ -1,8 +1,14 @@
-abraflexi-raiffeisenbank (1.3.6) UNRELEASED; urgency=medium
+abraflexi-raiffeisenbank (1.3.7) UNRELEASED; urgency=medium
+
+  * statement line is part of report
+
+ -- vitex <info@vitexsoftware.cz>  Mon, 10 Mar 2025 14:13:31 +0100
+
+abraflexi-raiffeisenbank (1.3.6) unstable; urgency=medium
 
   * remote account for expense added
 
- -- vitex <info@vitexsoftware.cz>  Wed, 18 Dec 2024 16:32:40 +0100
+ -- vitex <info@vitexsoftware.cz>  Mon, 10 Mar 2025 14:11:38 +0100
 
 abraflexi-raiffeisenbank (1.3.5) unstable; urgency=medium
 
