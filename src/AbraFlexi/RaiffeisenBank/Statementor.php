@@ -20,7 +20,7 @@ namespace AbraFlexi\RaiffeisenBank;
  */
 class Statementor extends BankClient
 {
-    private string $statementLine = 'MAIN';
+    public string $statementLine = 'MAIN';
     private int $exitCode = 0;
 
     /**
