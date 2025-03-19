@@ -77,6 +77,16 @@ Import Scopes
   * `2024-10-11` - only specific day
 
 
+
+After installing the package, the following new commands are available in the system:
+
+  * **abraflexi-raiffeisenbank-setup**        - check and/or prepare Bank account setup in AbraFlexi
+  * **abraflexi-raiffeisenbank-transactions** - Import transactions. From latest imported or within the given scope
+  * **abraflexi-raiffeisenbank-statements**   - Import transactions from Account Statements.
+  * **abraflexi-raiffeisenbank-events**       - Import pdf statement to Events in AbraFlexi.
+
+
+
 Powered by: https://github.com/VitexSoftware/php-vitexsoftware-rbczpremiumapi
 
 MultiFlexi
@@ -101,11 +111,3 @@ Please use the .deb packages. The repository is availble:
     sudo apt update
     sudo apt install abraflexi-raiffeisenbank
 ```
-
-After installing the package, the following new commands are available in the system:
-
-  * **abraflexi-raiffeisenbank-setup**        - check and/or prepare Bank account setup in AbraFlexi
-  * **abraflexi-raiffeisenbank-transactions** - Import transactions. From latest imported or within the given scope
-  * **abraflexi-raiffeisenbank-statements**   - Import transactions from Account Statements.
-  * **abraflexi-raiffeisenbank-events**       - Import pdf statement to Events in AbraFlexi.
-
