@@ -21,15 +21,17 @@ require_once '../vendor/autoload.php';
  * Get today's statements list.
  */
 // Parse command line arguments
-$options = getopt('s::e::o:', ['scope::', 'env::', 'output:']);
 
-// Get the path to the .env file
-$envfile = $options['env'] ?? '../.env';
+$options = getopt('o::e::d::s::', ['output::environment::destination::scope::']);
+\Ease\Shared::init(
+    ['ABRAFLEXI_URL', 'ABRAFLEXI_LOGIN', 'ABRAFLEXI_PASSWORD', 'ABRAFLEXI_COMPANY', 'CERT_FILE', 'CERT_PASS', 'XIBMCLIENTID', 'ACCOUNT_NUMBER'],
+    \array_key_exists('environment', $options) ? $options['environment'] : (\array_key_exists('e', $options) ? $options['e'] : '../.env'),
+);
+$destination = \array_key_exists('output', $options) ? $options['output'] : (\array_key_exists('o', $options) ? $options['o'] : \Ease\Shared::cfg('RESULT_FILE', 'php://stdout'));
 
-\Ease\Shared::init(['ABRAFLEXI_URL', 'ABRAFLEXI_LOGIN', 'ABRAFLEXI_PASSWORD', 'ABRAFLEXI_COMPANY', 'CERT_FILE', 'CERT_PASS', 'XIBMCLIENTID', 'ACCOUNT_NUMBER'], $envfile);
 BankClient::checkCertificatePresence(\Ease\Shared::cfg('CERT_FILE'));
 
-$destination = \array_key_exists('output', $options) ? $options['output'] : \Ease\Shared::cfg('RESULT_FILE', 'php://stdout');
+
 
 $engine = new Statementor(\Ease\Shared::cfg('ACCOUNT_NUMBER'));
 $scope = $options['scope'] ?? \Ease\Shared::cfg('IMPORT_SCOPE', 'last_month');
