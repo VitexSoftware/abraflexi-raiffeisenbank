@@ -31,8 +31,6 @@ $destination = \array_key_exists('output', $options) ? $options['output'] : (\ar
 
 BankClient::checkCertificatePresence(\Ease\Shared::cfg('CERT_FILE'));
 
-
-
 $engine = new Statementor(\Ease\Shared::cfg('ACCOUNT_NUMBER'));
 $scope = $options['scope'] ?? \Ease\Shared::cfg('IMPORT_SCOPE', 'last_month');
 $engine->setScope($scope);
