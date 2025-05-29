@@ -62,17 +62,29 @@ class Statementor extends BankClient
 
                 $result = $apiInstance->getStatements($this->getxRequestId(), $requestBody, $page);
 
-                if (empty($result)) {
+                $pageStatements = $result->getStatements();
+
+                if (empty($pageStatements)) {
                     $this->addStatusMessage(sprintf(_('No Statements from %s to %s'), $this->since->format(self::$dateFormat), $this->until->format(self::$dateFormat)));
-                    $result['lastPage'] = true;
-                }
-
-                if (\array_key_exists('statements', (array) $result)) {
-                    $statements = array_merge($statements, $result['statements']);
-                }
-
-                if (\array_key_exists('last', (array) $result) && $result['last'] === true) {
                     $stop = true;
+                } else {
+                    foreach ($pageStatements as $statement) {
+                        if ($statement instanceof \VitexSoftware\Raiffeisenbank\Model\GetStatements200ResponseStatementsInner) {
+                            $statements[] = [
+                                'statementId' => $statement->getStatementId(),
+                                'accountId' => $statement->getAccountId(),
+                                'statementNumber' => $statement->getStatementNumber(),
+                                'dateFrom' => $statement->getDateFrom()->format(self::$dateFormat),
+                                'dateTo' => $statement->getDateTo()->format(self::$dateFormat),
+                                'currency' => $statement->getCurrency(),
+                                'statementFormats' => $statement->getStatementFormats(),
+                            ];
+                        } else {
+                            $this->addStatusMessage('Invalid statement object type', 'error');
+                        }
+                    }
+
+                    $stop = $result->getLast() ?? true; // Assuming `getLast()` exists to indicate the last page
                 }
 
                 if ($stop === false) {
@@ -117,7 +129,7 @@ class Statementor extends BankClient
                 $requestBody = new \VitexSoftware\Raiffeisenbank\Model\DownloadStatementRequest([
                     'accountNumber' => $this->bank->getDataValue('buc'),
                     'currency' => $this->getCurrencyCode(),
-                    'statementId' => $statement->statementId,
+                    'statementId' => $statement['statementId'],
                     'statementFormat' => 'xml']);
                 $xmlStatementRaw = $apiInstance->downloadStatement($this->getxRequestId(), 'cs', $requestBody);
                 $xmlStatement = $xmlStatementRaw->fread($xmlStatementRaw->getSize());
@@ -165,7 +177,7 @@ class Statementor extends BankClient
         $moveTrans = ['DBIT' => 'typPohybu.vydej', 'CRDT' => 'typPohybu.prijem'];
         $this->setDataValue('typPohybuK', $moveTrans[(string) $ntry->CdtDbtInd]);
         $this->setDataValue('cisDosle', (string) $ntry->NtryRef);
-        $this->setDataValue('datVyst', \AbraFlexi\RO::dateToFlexiDate(new \DateTime((string) $ntry->BookgDt->DtTm)));
+        $this->setDataValue('datVyst', \AbraFlexi\Functions::dateToFlexiDate(new \DateTime((string) $ntry->BookgDt->DtTm)));
         $this->setDataValue('sumOsv', abs((float) ((string) $ntry->Amt)));
         $this->setDataValue('banka', $this->bank);
         $this->setDataValue('mena', \AbraFlexi\Functions::code((string) $ntry->Amt->attributes()->Ccy));

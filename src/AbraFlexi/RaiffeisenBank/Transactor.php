@@ -20,6 +20,11 @@ namespace AbraFlexi\RaiffeisenBank;
  */
 class Transactor extends BankClient
 {
+    public static array $moveTrans = [
+        'DBIT' => 'typPohybu.vydej',
+        'CRDT' => 'typPohybu.prijem',
+    ];
+
     /**
      * Transaction Handler.
      *
@@ -34,9 +39,9 @@ class Transactor extends BankClient
     /**
      * Obtain Transactions from RB.
      *
-     * @return array
+     * @return array<VitexSoftware\Raiffeisenbank\Model\GetTransactionList200ResponseTransactionsInner>
      */
-    public function getTransactions()
+    public function getTransactions(): array
     {
         $apiInstance = new \VitexSoftware\Raiffeisenbank\PremiumAPI\GetTransactionListApi();
         $page = 1;
@@ -46,16 +51,25 @@ class Transactor extends BankClient
         try {
             do {
                 $result = $apiInstance->getTransactionList($this->getxRequestId(), $this->bank->getDataValue('buc'), $this->getCurrencyCode(), $this->since->format(self::$dateTimeFormat), $this->until->format(self::$dateTimeFormat), $page);
+                $transactions = $result->getTransactions();
 
-                if (empty($result)) {
+                if (empty($transactions)) {
                     $this->addStatusMessage(sprintf(_('No transactions from %s to %s'), $this->since->format(self::$dateTimeFormat), $this->until->format(self::$dateTimeFormat)));
-                    $result['lastPage'] = true;
+                    $lastPage = true;
+                } else {
+                    $lastPage = $result->getLastPage() ?? true; // Access lastPage using a method or property
                 }
 
-                if (\array_key_exists('transactions', $result)) {
-                    $transactions = array_merge($transactions, $result['transactions']);
+                foreach ($transactions as $transaction) {
+                    if ($transaction instanceof \VitexSoftware\Raiffeisenbank\Model\GetTransactionList200ResponseTransactionsInner) {
+                        $this->takeTransactionData($transaction); // Ensure correct type is passed
+                    } else {
+                        $this->addStatusMessage('Invalid transaction object type', 'error');
+                    }
                 }
-            } while ($result['lastPage'] === false);
+
+                ++$page;
+            } while ($lastPage === false);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
             preg_match('/cURL error ([0-9]+)/', $errorMessage, $matches);
@@ -89,7 +103,7 @@ class Transactor extends BankClient
         foreach ($allTransactions as $transaction) {
             $this->dataReset();
 
-            if (property_exists($transaction, 'creditDebitIndication')) {
+            if ($transaction->getCreditDebitIndication()) {
                 $this->takeTransactionData($transaction);
                 $success = $this->insertTransactionToAbraFlexi($success);
                 $payments[] = $this->getRecordIdent();
@@ -105,128 +119,62 @@ class Transactor extends BankClient
 
     /**
      * Use Transaction data for Bank record.
-     *
-     * @param array $transactionData
      */
-    public function takeTransactionData($transactionData): void
+    public function takeTransactionData(\VitexSoftware\Raiffeisenbank\Model\GetTransactionList200ResponseTransactionsInner $transaction): void
     {
         //        $this->setMyKey(\AbraFlexi\RO::code('RB' . $transactionData->entryReference));
         $this->setDataValue('bezPolozek', true);
-        $this->setDataValue('typDokl', \AbraFlexi\RO::code(\Ease\Shared::cfg('TYP_DOKLADU', 'STANDARD')));
-        $moveTrans = [
-            'DBIT' => 'typPohybu.vydej',
-            'CRDT' => 'typPohybu.prijem',
-        ];
-        $this->setDataValue('typPohybuK', $moveTrans[$transactionData->creditDebitIndication]);
-        $this->setDataValue('cisDosle', $transactionData->entryReference);
+        $this->setDataValue('typDokl', \AbraFlexi\Functions::code(\Ease\Shared::cfg('TYP_DOKLADU', 'STANDARD')));
+        $this->setDataValue('typPohybuK', self::$moveTrans[$transaction->getCreditDebitIndication()]);
+        $this->setDataValue('cisDosle', $transaction->getEntryReference());
 
-        if (property_exists($transactionData->entryDetails, 'transactionDetails')) {
-            if (property_exists($transactionData->entryDetails->transactionDetails, 'remittanceInformation')) {
-                if (property_exists($transactionData->entryDetails->transactionDetails->remittanceInformation, 'originatorMessage')) {
-                    $this->setDataValue('popis', $transactionData->entryDetails->transactionDetails->remittanceInformation->originatorMessage);
-                }
+        $entryDetails = $transaction->getEntryDetails();
 
-                if (property_exists($transactionData->entryDetails->transactionDetails->remittanceInformation, 'creditorReferenceInformation')) {
-                    if (property_exists($transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation, 'variable')) {
-                        $this->setDataValue('varSym', $transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation->variable);
-                    }
+        if ($entryDetails && $entryDetails->getTransactionDetails()) {
+            $transactionDetails = $entryDetails->getTransactionDetails();
+            $remittanceInformation = $transactionDetails->getRemittanceInformation();
 
-                    if (property_exists($transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation, 'constant')) {
-                        $conSym = $transactionData->entryDetails->transactionDetails->remittanceInformation->creditorReferenceInformation->constant;
+            if ($remittanceInformation) {
+                $this->setDataValue('popis', $remittanceInformation->getOriginatorMessage());
 
-                        if ((int) $conSym) {
-                            $conSym = sprintf('%04d', $conSym);
-                            $this->ensureKSExists($conSym);
-                            $this->setDataValue('konSym', \AbraFlexi\RO::code($conSym));
-                        }
+                $creditorReferenceInformation = $remittanceInformation->getCreditorReferenceInformation();
+
+                if ($creditorReferenceInformation) {
+                    $this->setDataValue('varSym', $creditorReferenceInformation->getVariable());
+
+                    $constant = $creditorReferenceInformation->getConstant();
+
+                    if ($constant) {
+                        $conSym = sprintf('%04d', $constant);
+                        $this->ensureKSExists($conSym);
+                        $this->setDataValue('konSym', \AbraFlexi\RO::code($conSym));
                     }
                 }
             }
         }
 
-        $this->setDataValue('datVyst', $transactionData->bookingDate);
-
-        // $this->setDataValue('duzpPuv', $transactionData->valueDate);
-
+        $this->setDataValue('datVyst', $transaction->getBookingDate());
         $this->setDataValue('poznam', 'Import Job '.\Ease\Shared::cfg('MULTIFLEXI_JOB_ID', 'n/a'));
-        $this->setDataValue('sumOsv', abs($transactionData->amount->value));
-        // $this->setDataValue('sumCelkem', abs($transactionData->amount->value));
+        $this->setDataValue('sumOsv', abs($transaction->getAmount()->getValue()));
         $this->setDataValue('stavUzivK', 'stavUziv.nactenoEl');
 
-        if (property_exists($transactionData->entryDetails->transactionDetails->relatedParties, 'counterParty')) {
-            if (property_exists($transactionData->entryDetails->transactionDetails->relatedParties->counterParty, 'name')) {
-                $this->setDataValue('nazFirmy', $transactionData->entryDetails->transactionDetails->relatedParties->counterParty->name);
-            }
+        $relatedParties = $transactionDetails->getRelatedParties();
 
-            $this->setDataValue('buc', $transactionData->entryDetails->transactionDetails->relatedParties->counterParty->account->accountNumber);
-            $this->setDataValue('smerKod', \AbraFlexi\RO::code($transactionData->entryDetails->transactionDetails->relatedParties->counterParty->organisationIdentification->bankCode));
+        if ($relatedParties && $relatedParties->getCounterParty()) {
+            $counterParty = $relatedParties->getCounterParty();
+            $this->setDataValue('nazFirmy', $counterParty->getName());
+            $this->setDataValue('buc', $counterParty->getAccount()->getAccountNumber());
+            $this->setDataValue('smerKod', \AbraFlexi\Functions::code($counterParty->getOrganisationIdentification()->getBankCode()));
         }
 
         $this->setDataValue('banka', $this->bank);
-        $this->setDataValue('mena', \AbraFlexi\RO::code($transactionData->amount->currency));
-        //    "firma": {
-        //        "showToUser": "true",
-        //        "propertyName": "firma",
-        //        "dbName": "IdFirmy",
-        //        "name": "Zkratka firmy",
-        //        "title": "Zkratka firmy",
-        //        "type": "relation",
-        //        "fkName": "Adresy firem 4021",
-        //        "fkEvidencePath": "adresar",
-        //        "fkEvidenceType": "ADRESAR",
-        //        "isVisible": "true",
-        //        "isSortable": "true",
-        //        "isHighlight": "false",
-        //        "inId": "false",
-        //        "inSummary": "true",
-        //        "inDetail": "true",
-        //        "inExpensive": "false",
-        //        "mandatory": "false",
-        //        "maxLength": "20",
-        //        "isWritable": "true",
-        //        "isOverWritable": "true",
-        //        "hasBusinessLogic": "true",
-        //        "isUpperCase": "true",
-        //        "isLowerCase": "false",
-        //        "url": "http:\/\/demo.flexibee.eu\/c\/demo\/adresar",
-        //        "links": null
-        //    },
-        //        $this->setDataValue('smerKod', $transactionData);
-        //    "smerKod": {
-        //        "showToUser": "true",
-        //        "propertyName": "smerKod",
-        //        "dbName": "IdSmerKod",
-        //        "name": "K\u00f3d banky",
-        //        "title": "K\u00f3d banky",
-        //        "type": "relation",
-        //        "fkName": "Pen\u011b\u017en\u00ed \u00fastavy 20010",
-        //        "fkEvidencePath": "penezni-ustav",
-        //        "fkEvidenceType": "PENEZNI_USTAV",
-        //        "isVisible": "true",
-        //        "isSortable": "true",
-        //        "isHighlight": "false",
-        //        "inId": "false",
-        //        "inSummary": "false",
-        //        "inDetail": "true",
-        //        "inExpensive": "false",
-        //        "mandatory": "false",
-        //        "maxLength": "20",
-        //        "isWritable": "true",
-        //        "isOverWritable": "true",
-        //        "hasBusinessLogic": "false",
-        //        "isUpperCase": "true",
-        //        "isLowerCase": "false",
-        //        "url": "http:\/\/demo.flexibee.eu\/c\/demo\/penezni-ustav",
-        //        "links": null
-        //    },
-
+        $this->setDataValue('mena', \AbraFlexi\Functions::code($transaction->getAmount()->getCurrency()));
         $this->setDataValue('source', $this->sourceString());
-        //        echo $this->getJsonizedData() . "\n";
 
-        if ((string) $transactionData->creditDebitIndication === 'CRDT') {
-            $this->setDataValue('rada', \AbraFlexi\RO::code('BANKA+'));
+        if ((string) $transaction->getCreditDebitIndication() === 'CRDT') {
+            $this->setDataValue('rada', \AbraFlexi\Functions::code('BANKA+'));
         } else {
-            $this->setDataValue('rada', \AbraFlexi\RO::code('BANKA-'));
+            $this->setDataValue('rada', \AbraFlexi\Functions::code('BANKA-'));
         }
     }
 
