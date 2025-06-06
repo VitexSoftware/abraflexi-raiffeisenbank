@@ -14,7 +14,7 @@ declare(strict_types=1);
 namespace AbraFlexi\RaiffeisenBank;
 
 require_once '../vendor/autoload.php';
-\define('APP_NAME', 'Importer');
+\define('APP_NAME', 'RBTransactions2AbraFlexi');
 /**
  * Get today's transactions list.
  */
@@ -38,6 +38,7 @@ if (\Ease\Shared::cfg('APP_DEBUG', false)) {
 }
 
 $report = [
+    'source' => \Ease\Shared::appName().' v'.\Ease\Shared::appVersion(),
     'account' => \Ease\Shared::cfg('ACCOUNT_NUMBER'),
     'scope' => $scope,
     'until' => $engine->getUntil()->format('Y-m-d'),

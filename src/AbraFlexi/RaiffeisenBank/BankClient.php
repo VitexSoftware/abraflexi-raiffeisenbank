@@ -20,6 +20,8 @@ namespace AbraFlexi\RaiffeisenBank;
  */
 abstract class BankClient extends \AbraFlexi\Banka
 {
+    public string $scope;
+
     /**
      * DateTime Formating eg. 2021-08-01T10:00:00.0Z.
      */
@@ -197,6 +199,8 @@ abstract class BankClient extends \AbraFlexi\Banka
             $this->since = $this->since->setTime(0, 0);
             $this->until = $this->until->setTime(23, 59);
         }
+
+        $this->scope = $scope;
     }
 
     /**
