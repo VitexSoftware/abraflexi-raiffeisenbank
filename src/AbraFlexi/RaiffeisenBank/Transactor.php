@@ -58,17 +58,17 @@ class Transactor extends BankClient
                     $lastPage = true;
                 } else {
                     $lastPage = $result->getLastPage() ?? true; // Access lastPage using a method or property
-                }
 
-                foreach ($transactions as $transaction) {
-                    if ($transaction instanceof \VitexSoftware\Raiffeisenbank\Model\GetTransactionList200ResponseTransactionsInner) {
-                        $this->takeTransactionData($transaction); // Ensure correct type is passed
-                    } else {
-                        $this->addStatusMessage('Invalid transaction object type', 'error');
+                    foreach ($transactions as $transaction) {
+                        if ($transaction instanceof \VitexSoftware\Raiffeisenbank\Model\GetTransactionList200ResponseTransactionsInner) {
+                            $this->takeTransactionData($transaction); // Ensure correct type is passed
+                        } else {
+                            $this->addStatusMessage('Invalid transaction object type', 'error');
+                        }
                     }
-                }
 
-                ++$page;
+                    ++$page;
+                }
             } while ($lastPage === false);
         } catch (\Exception $e) {
             $errorMessage = $e->getMessage();
@@ -87,7 +87,7 @@ class Transactor extends BankClient
             exit((int) $errorCode);
         }
 
-        return $transactions;
+        return (array) $transactions;
     }
 
     /**

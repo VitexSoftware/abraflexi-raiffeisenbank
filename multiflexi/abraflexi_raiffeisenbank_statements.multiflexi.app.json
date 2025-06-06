@@ -62,9 +62,24 @@
             "defval": "yesterday"
         },
         "STATEMENT_LINE": {
-            "type": "text",
+            "type": "select",
             "description": "Bank Statement line",
-            "defval": "ADDITIONAL"
+	    "defval": "ADDITIONAL",
+            "hint": "MAIN",
+            "options": {
+                "MAIN": "Main statement line",
+                "ADDITIONAL": "Additional statement line" 
+            }
+        },
+        "STATEMENT_LANGUAGE": {
+            "type": "select",
+            "description": "Request Bank Statement in given language",
+	    "defval": "en",
+            "hint": "cs",
+            "options": {
+                "cs": "Czech Language",
+                "en": "English" 
+            }
         },
         "XIBMCLIENTID": {
             "type": "text",

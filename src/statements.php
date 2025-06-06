@@ -13,7 +13,7 @@ declare(strict_types=1);
 
 namespace AbraFlexi\RaiffeisenBank;
 
-\define('APP_NAME', 'Importer');
+\define('APP_NAME', 'RBStatements2AbraFlexi');
 
 require_once '../vendor/autoload.php';
 
@@ -40,6 +40,7 @@ if (\Ease\Shared::cfg('APP_DEBUG', false)) {
 }
 
 $report = [
+    'source' => \Ease\Shared::appName().' v'.\Ease\Shared::appVersion(),
     'account' => \Ease\Shared::cfg('ACCOUNT_NUMBER'),
     'line' => $engine->getStatementLine(),
     'scope' => $scope,

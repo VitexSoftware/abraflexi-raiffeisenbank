@@ -21,6 +21,7 @@ namespace AbraFlexi\RaiffeisenBank;
 class Statementor extends BankClient
 {
     public string $statementLine = 'MAIN';
+    public string $bankAccount;
     private int $exitCode = 0;
 
     /**
@@ -31,84 +32,9 @@ class Statementor extends BankClient
      */
     public function __construct($bankAccount, $options = [])
     {
+        $this->bankAccount = $bankAccount;
         parent::__construct($bankAccount, $options);
         $this->setupProperty($options, 'statementLine', 'STATEMENT_LINE');
-    }
-
-    /**
-     * Obtain Transactions from RB.
-     *
-     * @return array
-     */
-    public function getStatements()
-    {
-        $apiInstance = new \VitexSoftware\Raiffeisenbank\PremiumAPI\GetStatementListApi();
-        $page = 0;
-        $statements = [];
-        $this->addStatusMessage(sprintf(_('Request statements from %s to %s'), $this->since->format(self::$dateFormat), $this->until->format(self::$dateFormat)), 'debug');
-
-        try {
-            $stop = true;
-
-            do {
-                $requestBody = new \VitexSoftware\Raiffeisenbank\Model\GetStatementsRequest([
-                    'accountNumber' => $this->bank->getDataValue('buc'),
-                    'page' => ++$page,
-                    'size' => 60,
-                    'currency' => $this->getCurrencyCode(),
-                    'statementLine' => $this->statementLine,
-                    'dateFrom' => $this->since->format(self::$dateFormat),
-                    'dateTo' => $this->until->format(self::$dateFormat)]);
-
-                $result = $apiInstance->getStatements($this->getxRequestId(), $requestBody, $page);
-
-                $pageStatements = $result->getStatements();
-
-                if (empty($pageStatements)) {
-                    $this->addStatusMessage(sprintf(_('No Statements from %s to %s'), $this->since->format(self::$dateFormat), $this->until->format(self::$dateFormat)));
-                    $stop = true;
-                } else {
-                    foreach ($pageStatements as $statement) {
-                        if ($statement instanceof \VitexSoftware\Raiffeisenbank\Model\GetStatements200ResponseStatementsInner) {
-                            $statements[] = [
-                                'statementId' => $statement->getStatementId(),
-                                'accountId' => $statement->getAccountId(),
-                                'statementNumber' => $statement->getStatementNumber(),
-                                'dateFrom' => $statement->getDateFrom()->format(self::$dateFormat),
-                                'dateTo' => $statement->getDateTo()->format(self::$dateFormat),
-                                'currency' => $statement->getCurrency(),
-                                'statementFormats' => $statement->getStatementFormats(),
-                            ];
-                        } else {
-                            $this->addStatusMessage('Invalid statement object type', 'error');
-                        }
-                    }
-
-                    $stop = $result->getLast() ?? true; // Assuming `getLast()` exists to indicate the last page
-                }
-
-                if ($stop === false) {
-                    sleep(1);
-                }
-            } while ($stop === false);
-        } catch (\Exception $e) {
-            $errorMessage = $e->getMessage();
-            preg_match('/cURL error ([0-9]+)/', $errorMessage, $matches);
-
-            if (\array_key_exists(1, $matches)) {
-                $errorCode = $matches[1];
-            } elseif (preg_match('/\[([0-9]+)\]/', $errorMessage, $matches)) {
-                $errorCode = $matches[1];
-            } else {
-                $errorCode = 2;
-            }
-
-            $this->addStatusMessage('Exception when calling GetStatementsRequest: '.$errorMessage, 'error', $apiInstance);
-
-            $this->exitCode = (int) $errorCode;
-        }
-
-        return $statements;
     }
 
     public function getStatementLine(): string
@@ -131,7 +57,7 @@ class Statementor extends BankClient
                     'currency' => $this->getCurrencyCode(),
                     'statementId' => $statement['statementId'],
                     'statementFormat' => 'xml']);
-                $xmlStatementRaw = $apiInstance->downloadStatement($this->getxRequestId(), 'cs', $requestBody);
+                $xmlStatementRaw = $apiInstance->downloadStatement($this->getxRequestId(), \Ease\Shared::cfg('STATEMENT_LANGUAGE', 'cs'), $requestBody); // To
                 $xmlStatement = $xmlStatementRaw->fread($xmlStatementRaw->getSize());
                 $statementXML = new \SimpleXMLElement($xmlStatement);
 
@@ -268,5 +194,12 @@ class Statementor extends BankClient
     public function getExitCode(): int
     {
         return $this->exitCode;
+    }
+
+    public function getStatements()
+    {
+        $rb = new \VitexSoftware\Raiffeisenbank\Statementor($this->bankAccount, $this->scope);
+
+        return $rb->getStatements(\Ease\Shared::cfg('ACCOUNT_CURRENCY', 'CZK'), $this->statementLine);
     }
 }
