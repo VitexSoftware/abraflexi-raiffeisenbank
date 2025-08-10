@@ -10,7 +10,7 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "spojenet/flexibee": "^3.5",
+        "spojenet/flexibee": "^3.6",
         "vitexsoftware/rbczpremiumapi": "^1.4"
     },
     "autoload": {
