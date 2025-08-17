@@ -13,6 +13,9 @@ declare(strict_types=1);
 
 namespace AbraFlexi\RaiffeisenBank;
 
+use Exception;
+use Throwable;
+
 require_once '../vendor/autoload.php';
 /**
  * Get List of bank accounts and import it into AbraFlexi.
@@ -26,7 +29,7 @@ $envfile = $options['env'] ?? '../.env';
 
 \Ease\Shared::init(['ABRAFLEXI_URL', 'ABRAFLEXI_LOGIN', 'ABRAFLEXI_PASSWORD', 'ABRAFLEXI_COMPANY', 'CERT_FILE', 'CERT_PASS', 'XIBMCLIENTID'], $envfile);
 $apiInstance = new \VitexSoftware\Raiffeisenbank\PremiumAPI\GetAccountsApi();
-$x_request_id = time(); // string | Unique request id provided by consumer application for reference and auditing.
+$x_request_id = (string) time(); // string | Unique request id provided by consumer application for reference and auditing.
 
 Transactor::checkCertificatePresence(\Ease\Shared::cfg('CERT_FILE'));
 
@@ -53,7 +56,7 @@ try {
                 $banker->setDataValue('nazBanky', 'Raiffeisenbank');
                 $banker->setDataValue('popis', $account->friendlyName);
                 $banker->setDataValue('iban', $account->iban);
-                $banker->setDataValue('smerKod', \AbraFlexi\RO::code($account->bankCode));
+                $banker->setDataValue('smerKod', \AbraFlexi\Code::ensure($account->bankCode));
                 $banker->setDataValue('bic', $account->bankBicCode);
                 $saved = $banker->sync();
                 $banker->addStatusMessage(
@@ -63,7 +66,7 @@ try {
             }
         }
     }
-} catch (Exception $e) {
+} catch (Throwable $e) {
     echo 'Exception when calling GetAccountsApi->getAccounts: ', $e->getMessage(), \PHP_EOL;
 }
 
@@ -71,7 +74,7 @@ $event = \Ease\Shared::cfg('ABRAFLEXI_EVENT', false);
 
 if ($event) {
     $eventor = new \AbraFlexi\TypAktivity();
-    $eventor->setDataValue('kod', \AbraFlexi\Functions::code($event));
+    $eventor->setDataValue('kod', \AbraFlexi\Code::ensure($event));
     $eventor->setDataValue('nazev', $event);
     $eventor->setDataValue('druhUdalK', 'druhUdal.udal');
 

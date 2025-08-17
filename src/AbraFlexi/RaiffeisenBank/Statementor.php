@@ -89,24 +89,24 @@ class Statementor extends BankClient
      */
     public function ntryToAbraFlexi($ntry)
     {
-        $this->setDataValue('typDokl', \AbraFlexi\Functions::code(\Ease\Shared::cfg('TYP_DOKLADU', 'STANDARD')));
+        $this->setDataValue('typDokl', \AbraFlexi\Code::ensure(\Ease\Shared::cfg('TYP_DOKLADU', 'STANDARD')));
         $this->setDataValue('bezPolozek', true);
         $this->setDataValue('stavUzivK', 'stavUziv.nactenoEl');
         $this->setDataValue('poznam', 'Import Job '.\Ease\Shared::cfg('MULTIFLEXI_JOB_ID', \Ease\Shared::cfg('JOB_ID', 'n/a')));
 
         if ((string) $ntry->CdtDbtInd === 'CRDT') {
-            $this->setDataValue('rada', \AbraFlexi\Functions::code('BANKA+'));
+            $this->setDataValue('rada', \AbraFlexi\Code::ensure('BANKA+'));
         } else {
-            $this->setDataValue('rada', \AbraFlexi\Functions::code('BANKA-'));
+            $this->setDataValue('rada', \AbraFlexi\Code::ensure('BANKA-'));
         }
 
         $moveTrans = ['DBIT' => 'typPohybu.vydej', 'CRDT' => 'typPohybu.prijem'];
         $this->setDataValue('typPohybuK', $moveTrans[(string) $ntry->CdtDbtInd]);
         $this->setDataValue('cisDosle', (string) $ntry->NtryRef);
-        $this->setDataValue('datVyst', \AbraFlexi\Functions::dateToFlexiDate(new \DateTime((string) $ntry->BookgDt->DtTm)));
+        $this->setDataValue('datVyst', \AbraFlexi\Date::fromDateTime(new \DateTime((string) $ntry->BookgDt->DtTm)));
         $this->setDataValue('sumOsv', abs((float) ((string) $ntry->Amt)));
         $this->setDataValue('banka', $this->bank);
-        $this->setDataValue('mena', \AbraFlexi\Functions::code((string) $ntry->Amt->attributes()->Ccy));
+        $this->setDataValue('mena', \AbraFlexi\Code::ensure((string) $ntry->Amt->attributes()->Ccy));
 
         if (\property_exists($ntry, 'NtryDtls')) {
             if (\property_exists($ntry->NtryDtls, 'TxDtls')) {
@@ -115,7 +115,7 @@ class Statementor extends BankClient
                 if ((int) $conSym) {
                     $conSym = sprintf('%04d', $conSym);
                     $this->ensureKSExists($conSym);
-                    $this->setDataValue('konSym', \AbraFlexi\Functions::code($conSym));
+                    $this->setDataValue('konSym', \AbraFlexi\Code::ensure($conSym));
                 }
 
                 if (property_exists($ntry->NtryDtls->TxDtls->Refs, 'EndToEndId')) {
@@ -138,7 +138,7 @@ class Statementor extends BankClient
 
                 if (\property_exists($ntry->NtryDtls->TxDtls, 'RltdAgts')) {
                     if (property_exists($ntry->NtryDtls->TxDtls->RltdAgts->DbtrAgt, 'FinInstnId')) {
-                        $this->setDataValue('smerKod', \AbraFlexi\Functions::code((string) $ntry->NtryDtls->TxDtls->RltdAgts->DbtrAgt->FinInstnId->Othr->Id));
+                        $this->setDataValue('smerKod', \AbraFlexi\Code::ensure((string) $ntry->NtryDtls->TxDtls->RltdAgts->DbtrAgt->FinInstnId->Othr->Id));
                     }
                 }
             }
