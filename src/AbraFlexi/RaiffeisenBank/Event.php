@@ -22,7 +22,7 @@ class Event extends \AbraFlexi\Udalost
 {
     public function createEvent(Statementor $engine): void
     {
-        $eventData['typAkt'] = \AbraFlexi\Functions::code(\Ease\Shared::cfg('ABRAFLEXI_EVENT'));
+        $eventData['typAkt'] = \AbraFlexi\Code::ensure(\Ease\Shared::cfg('ABRAFLEXI_EVENT'));
         // $eventData['doklInt'] = TODO: Banka ?
         $statementFiles = $engine->download(sys_get_temp_dir().'/');
 

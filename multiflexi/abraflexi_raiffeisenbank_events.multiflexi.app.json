@@ -8,8 +8,9 @@
     "uuid": "a82ca72b-a142-479b-b790-12b1e1a51fd7",
     "deploy": "apt install abraflexi-raiffeisenbank",
     "homepage": "https:\/\/github.com\/VitexSoftware\/abraflexi-raiffeisenbank",
-    "topics": "RaiffeisenBank,Statements,Events,PDF",
-    "requirements": "RaiffeisenBank,AbraFlexi",
+    "topics": ["RaiffeisenBank", "Statements", "Events", "PDF"],
+    "requirements": ["RaiffeisenBank", "AbraFlexi"],
+    "multiflexi": "abraflexi-raiffeisenbank-events",
     "environment": {
         "ABRAFLEXI_COMPANY": {
             "type": "string",
@@ -72,6 +73,5 @@
             "defval": "console|syslog",
             "required": false
         }
-    },
-    "multiflexi": ""
+    }
 }

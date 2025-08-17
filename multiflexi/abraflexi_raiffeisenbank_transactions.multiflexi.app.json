@@ -8,8 +8,9 @@
     "deploy": "apt install abraflexi-raiffeisenbank",
     "homepage": "https:\/\/github.com\/VitexSoftware\/abraflexi-raiffeisenbank",
     "uuid": "e2d13c2f-d265-4d49-9405-2dee3030a568",
-    "topics": "RaiffeisenBank,Transactions",
-    "requirements": "RaiffeisenBank,AbraFlexi",
+    "topics": ["RaiffeisenBank", "Transactions"],
+    "requirements": ["RaiffeisenBank", "AbraFlexi"],
+    "multiflexi": "abraflexi-raiffeisenbank-transactions",
     "environment": {
         "ABRAFLEXI_COMPANY": {
             "type": "string",
@@ -63,7 +64,7 @@
             "required": false
         },
         "APP_DEBUG": {
-            "type": "checkbox",
+            "type": "bool",
             "description": "Show debug messages",
             "defval": "False",
             "required": true
@@ -74,6 +75,6 @@
             "defval": "env_report.json",
             "required": false
         }
-    },
-    "multiflexi": ""
+    }
+    
 }

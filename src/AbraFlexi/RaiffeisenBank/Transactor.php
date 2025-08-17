@@ -39,7 +39,7 @@ class Transactor extends BankClient
     /**
      * Obtain Transactions from RB.
      *
-     * @return array<VitexSoftware\Raiffeisenbank\Model\GetTransactionList200ResponseTransactionsInner>
+     * @return array<\VitexSoftware\Raiffeisenbank\Model\GetTransactionList200ResponseTransactionsInner>
      */
     public function getTransactions(): array
     {
@@ -50,7 +50,7 @@ class Transactor extends BankClient
 
         try {
             do {
-                $result = $apiInstance->getTransactionList($this->getxRequestId(), $this->bank->getDataValue('buc'), $this->getCurrencyCode(), $this->since->format(self::$dateTimeFormat), $this->until->format(self::$dateTimeFormat), $page);
+                $result = $apiInstance->getTransactionList($this->getxRequestId(), $this->bank->getDataValue('buc'), $this->getCurrencyCode(), $this->since, $this->until, $page);
                 $transactions = $result->getTransactions();
 
                 if (empty($transactions)) {
@@ -124,7 +124,7 @@ class Transactor extends BankClient
     {
         //        $this->setMyKey(\AbraFlexi\RO::code('RB' . $transactionData->entryReference));
         $this->setDataValue('bezPolozek', true);
-        $this->setDataValue('typDokl', \AbraFlexi\Functions::code(\Ease\Shared::cfg('TYP_DOKLADU', 'STANDARD')));
+        $this->setDataValue('typDokl', \AbraFlexi\Code::ensure(\Ease\Shared::cfg('TYP_DOKLADU', 'STANDARD')));
         $this->setDataValue('typPohybuK', self::$moveTrans[$transaction->getCreditDebitIndication()]);
         $this->setDataValue('cisDosle', $transaction->getEntryReference());
 
@@ -147,7 +147,7 @@ class Transactor extends BankClient
                     if ($constant) {
                         $conSym = sprintf('%04d', $constant);
                         $this->ensureKSExists($conSym);
-                        $this->setDataValue('konSym', \AbraFlexi\RO::code($conSym));
+                        $this->setDataValue('konSym', \AbraFlexi\Code::ensure($conSym));
                     }
                 }
             }
@@ -164,17 +164,17 @@ class Transactor extends BankClient
             $counterParty = $relatedParties->getCounterParty();
             $this->setDataValue('nazFirmy', $counterParty->getName());
             $this->setDataValue('buc', $counterParty->getAccount()->getAccountNumber());
-            $this->setDataValue('smerKod', \AbraFlexi\Functions::code($counterParty->getOrganisationIdentification()->getBankCode()));
+            $this->setDataValue('smerKod', \AbraFlexi\Code::ensure($counterParty->getOrganisationIdentification()->getBankCode()));
         }
 
         $this->setDataValue('banka', $this->bank);
-        $this->setDataValue('mena', \AbraFlexi\Functions::code($transaction->getAmount()->getCurrency()));
+        $this->setDataValue('mena', \AbraFlexi\Code::ensure($transaction->getAmount()->getCurrency()));
         $this->setDataValue('source', $this->sourceString());
 
         if ((string) $transaction->getCreditDebitIndication() === 'CRDT') {
-            $this->setDataValue('rada', \AbraFlexi\Functions::code('BANKA+'));
+            $this->setDataValue('rada', \AbraFlexi\Code::ensure('BANKA+'));
         } else {
-            $this->setDataValue('rada', \AbraFlexi\Functions::code('BANKA-'));
+            $this->setDataValue('rada', \AbraFlexi\Code::ensure('BANKA-'));
         }
     }
 

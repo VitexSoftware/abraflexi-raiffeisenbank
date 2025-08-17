@@ -80,7 +80,7 @@ abstract class BankClient extends \AbraFlexi\Banka
      *
      * @param string $accountNumber
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function getBank($accountNumber): \AbraFlexi\BankovniUcet
     {
@@ -220,7 +220,7 @@ abstract class BankClient extends \AbraFlexi\Banka
      */
     public function getCurrencyCode()
     {
-        return empty((string) $this->bank->getDataValue('mena')) ? 'CZK' : \AbraFlexi\Functions::uncode((string) $this->bank->getDataValue('mena'));
+        return empty((string) $this->bank->getDataValue('mena')) ? 'CZK' : \AbraFlexi\Code::strip((string) $this->bank->getDataValue('mena'));
     }
 
     /**
@@ -263,7 +263,7 @@ abstract class BankClient extends \AbraFlexi\Banka
                 throw $exc;
             }
 
-            $this->addStatusMessage(sprintf(_('New entry %s %s %s: %s %s %s'), $this->getDataValue('cisDosle'), (string) $this->getRecordIdent(), (string) $this->getDataValue('nazFirmy'), (string) $this->getDataValue('popis'), (string) $this->getDataValue('sumOsv'), \AbraFlexi\Functions::uncode((string) $this->getDataValue('mena'))), $result ? 'success' : 'error');
+            $this->addStatusMessage(sprintf(_('New entry %s %s %s: %s %s %s'), $this->getDataValue('cisDosle'), (string) $this->getRecordIdent(), (string) $this->getDataValue('nazFirmy'), (string) $this->getDataValue('popis'), (string) $this->getDataValue('sumOsv'), \AbraFlexi\Code::strip((string) $this->getDataValue('mena'))), $result ? 'success' : 'error');
             ++$success;
         } else {
             $this->addStatusMessage(sprintf(_('Record with remoteNumber %s already present in AbraFlexi'), (string) $this->getDataValue('cisDosle')), 'warning');
