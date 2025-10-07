@@ -11,8 +11,11 @@ declare(strict_types=1);
  * file that was distributed with this source code.
  */
 
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\TestCase;
 
+#[CoversClass(\AbraFlexi\RaiffeisenBank\Transactor::class)]
 class TransactorTest extends TestCase
 {
     protected \AbraFlexi\RaiffeisenBank\Transactor $transactor;
@@ -65,6 +68,14 @@ class TransactorTest extends TestCase
         $transactions = $this->transactor->getTransactions();
 
         $this->assertIsArray($transactions);
+
+        // Each transaction should be an instance of the expected class
+        if (!empty($transactions)) {
+            $this->assertInstanceOf(
+                \VitexSoftware\Raiffeisenbank\Model\GetTransactionList200ResponseTransactionsInner::class,
+                $transactions[0],
+            );
+        }
     }
 
     /**
@@ -81,46 +92,48 @@ class TransactorTest extends TestCase
 
     public function testTakeTransactionData(): void
     {
-        $transactionData = json_decode(<<<'EOD'
-        {
-            "entryReference": "6828747987",
-            "amount": {
-                "value": 6776,
-                "currency": "CZK"
-            },
-            "creditDebitIndication": "CRDT",
-            "bookingDate": "2024-10-10T14:05:48.000+02:00",
-            "valueDate": "2024-10-10T14:05:47.000+02:00",
-            "bankTransactionCode": {
-                "code": "10000107000"
-            },
-            "entryDetails": {
-                "transactionDetails": {
-                    "references": {},
-                    "relatedParties": {
-                        "counterParty": {
-                            "name": "Customer s.r.o.",
-                            "organisationIdentification": {
-                                "bankCode": "0800"
-                            },
-                            "account": {
-                                "accountNumber": "6260979339"
-                            }
-                        }
-                    },
-                    "remittanceInformation": {
-                        "creditorReferenceInformation": {
-                            "variable": "197712024",
-                            "constant": "0"
-                        },
-                        "originatorMessage": "2024/09  IT"
-                    }
-                }
-            }
-        }
-EOD);
+        // Create mock objects for the new API structure
+        $amount = $this->createMock(\VitexSoftware\Raiffeisenbank\Model\GetTransactionList200ResponseTransactionsInnerAmount::class);
+        $amount->method('getValue')->willReturn(6776);
+        $amount->method('getCurrency')->willReturn('CZK');
 
-        $this->transactor->takeTransactionData($transactionData);
+        $counterParty = $this->createMock(\VitexSoftware\Raiffeisenbank\Model\GetTransactionList200ResponseTransactionsInnerEntryDetailsTransactionDetailsRelatedPartiesCounterParty::class);
+        $counterParty->method('getName')->willReturn('Customer s.r.o.');
+
+        $account = $this->createMock(\VitexSoftware\Raiffeisenbank\Model\GetTransactionList200ResponseTransactionsInnerEntryDetailsTransactionDetailsRelatedPartiesCounterPartyAccount::class);
+        $account->method('getAccountNumber')->willReturn('6260979339');
+        $counterParty->method('getAccount')->willReturn($account);
+
+        $orgId = $this->createMock(\VitexSoftware\Raiffeisenbank\Model\GetTransactionList200ResponseTransactionsInnerEntryDetailsTransactionDetailsRelatedPartiesCounterPartyOrganisationIdentification::class);
+        $orgId->method('getBankCode')->willReturn('0800');
+        $counterParty->method('getOrganisationIdentification')->willReturn($orgId);
+
+        $relatedParties = $this->createMock(\VitexSoftware\Raiffeisenbank\Model\GetTransactionList200ResponseTransactionsInnerEntryDetailsTransactionDetailsRelatedParties::class);
+        $relatedParties->method('getCounterParty')->willReturn($counterParty);
+
+        $creditorRef = $this->createMock(\VitexSoftware\Raiffeisenbank\Model\GetTransactionList200ResponseTransactionsInnerEntryDetailsTransactionDetailsRemittanceInformationCreditorReferenceInformation::class);
+        $creditorRef->method('getVariable')->willReturn('197712024');
+        $creditorRef->method('getConstant')->willReturn('0');
+
+        $remittanceInfo = $this->createMock(\VitexSoftware\Raiffeisenbank\Model\GetTransactionList200ResponseTransactionsInnerEntryDetailsTransactionDetailsRemittanceInformation::class);
+        $remittanceInfo->method('getOriginatorMessage')->willReturn('2024/09 IT');
+        $remittanceInfo->method('getCreditorReferenceInformation')->willReturn($creditorRef);
+
+        $transactionDetails = $this->createMock(\VitexSoftware\Raiffeisenbank\Model\GetTransactionList200ResponseTransactionsInnerEntryDetailsTransactionDetails::class);
+        $transactionDetails->method('getRelatedParties')->willReturn($relatedParties);
+        $transactionDetails->method('getRemittanceInformation')->willReturn($remittanceInfo);
+
+        $entryDetails = $this->createMock(\VitexSoftware\Raiffeisenbank\Model\GetTransactionList200ResponseTransactionsInnerEntryDetails::class);
+        $entryDetails->method('getTransactionDetails')->willReturn($transactionDetails);
+
+        $transaction = $this->createMock(\VitexSoftware\Raiffeisenbank\Model\GetTransactionList200ResponseTransactionsInner::class);
+        $transaction->method('getEntryReference')->willReturn('6828747987');
+        $transaction->method('getAmount')->willReturn($amount);
+        $transaction->method('getCreditDebitIndication')->willReturn('CRDT');
+        $transaction->method('getBookingDate')->willReturn(new \DateTime('2024-10-10T14:05:48.000+02:00'));
+        $transaction->method('getEntryDetails')->willReturn($entryDetails);
+
+        $this->transactor->takeTransactionData($transaction);
 
         $this->assertIsArray($this->transactor->getData());
     }

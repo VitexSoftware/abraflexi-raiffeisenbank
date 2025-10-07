@@ -33,12 +33,12 @@
             "defval": "https:\/\/demo.flexibee.eu:5434"
         },
         "ACCOUNT_NUMBER": {
-            "type": "text",
+            "type": "string",
             "description": "Bank Account Number",
             "defval": ""
         },
         "CERT_FILE": {
-            "type": "text",
+            "type": "file-path",
             "description": "Certificate file",
             "defval": ""
         },
@@ -48,12 +48,12 @@
             "defval": ""
         },
         "IMPORT_SCOPE": {
-            "type": "text",
+            "type": "string",
             "description": "Time scope of transactions downloaded",
             "defval": "auto"
         },
         "XIBMCLIENTID": {
-            "type": "text",
+            "type": "string",
             "description": "ClientID",
             "defval": ""
         },

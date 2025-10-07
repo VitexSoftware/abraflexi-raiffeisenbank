@@ -13,9 +13,6 @@ declare(strict_types=1);
 
 namespace AbraFlexi\RaiffeisenBank;
 
-use Exception;
-use Throwable;
-
 require_once '../vendor/autoload.php';
 /**
  * Get List of bank accounts and import it into AbraFlexi.
@@ -36,7 +33,7 @@ Transactor::checkCertificatePresence(\Ease\Shared::cfg('CERT_FILE'));
 try {
     $result = $apiInstance->getAccounts($x_request_id);
 
-    if (\array_key_exists('accounts', $result)) {
+    if ($result instanceof \VitexSoftware\Raiffeisenbank\Model\GetAccounts200Response && $result->getAccounts()) {
         $banker = new \AbraFlexi\RW(null, ['evidence' => 'bankovni-ucet']);
 
         if (\Ease\Shared::cfg('APP_DEBUG')) {
@@ -45,28 +42,28 @@ try {
 
         $currentAccounts = $banker->getColumnsFromAbraFlexi(['id', 'kod', 'nazev', 'iban', 'bic', 'nazBanky', 'poznam'], ['limit' => 0], 'iban');
 
-        foreach ($result['accounts'] as $account) {
-            if (\array_key_exists($account->iban, $currentAccounts)) {
-                $banker->addStatusMessage(sprintf('Account %s already exists in flexibee as %s', $account->friendlyName, $currentAccounts[$account->iban]['kod']));
+        foreach ($result->getAccounts() as $account) {
+            if (\array_key_exists($account->getIban(), $currentAccounts)) {
+                $banker->addStatusMessage(sprintf('Account %s already exists in flexibee as %s', $account->getFriendlyName(), $currentAccounts[$account->getIban()]['kod']));
             } else {
                 $banker->dataReset();
-                $banker->setDataValue('kod', 'RB'.$account->accountId);
-                $banker->setDataValue('nazev', $account->accountName);
-                $banker->setDataValue('buc', $account->accountNumber);
+                $banker->setDataValue('kod', 'RB'.$account->getAccountId());
+                $banker->setDataValue('nazev', $account->getAccountName());
+                $banker->setDataValue('buc', $account->getAccountNumber());
                 $banker->setDataValue('nazBanky', 'Raiffeisenbank');
-                $banker->setDataValue('popis', $account->friendlyName);
-                $banker->setDataValue('iban', $account->iban);
-                $banker->setDataValue('smerKod', \AbraFlexi\Code::ensure($account->bankCode));
-                $banker->setDataValue('bic', $account->bankBicCode);
+                $banker->setDataValue('popis', $account->getFriendlyName());
+                $banker->setDataValue('iban', $account->getIban());
+                $banker->setDataValue('smerKod', \AbraFlexi\Code::ensure($account->getBankCode()));
+                $banker->setDataValue('bic', $account->getBankBicCode());
                 $saved = $banker->sync();
                 $banker->addStatusMessage(
-                    sprintf('Account %s registered in flexibee as %s', $account->friendlyName, $banker->getRecordCode()),
+                    sprintf('Account %s registered in flexibee as %s', $account->getFriendlyName(), $banker->getRecordCode()),
                     $saved ? 'success' : 'error',
                 );
             }
         }
     }
-} catch (Throwable $e) {
+} catch (\Throwable $e) {
     echo 'Exception when calling GetAccountsApi->getAccounts: ', $e->getMessage(), \PHP_EOL;
 }
 
@@ -78,7 +75,7 @@ if ($event) {
     $eventor->setDataValue('nazev', $event);
     $eventor->setDataValue('druhUdalK', 'druhUdal.udal');
 
-    if ($eventor->recordExists() === false) {
+    if ($eventor->recordExists($eventor->getData()) === false) {
         $result = $eventor->sync();
         $eventor->addStatusMessage(sprintf(_('Event Type %s %s created'), $event, $eventor->getRecordCode()), $result ? 'success' : 'error');
     }

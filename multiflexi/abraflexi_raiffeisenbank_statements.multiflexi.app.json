@@ -33,22 +33,22 @@
             "defval": "https:\/\/demo.flexibee.eu:5434"
         },
         "ACCOUNT_NUMBER": {
-            "type": "text",
+            "type": "string",
             "description": "Bank Account Number",
             "defval": ""
         },
         "BANKA+": {
-            "type": "text",
+            "type": "string",
             "description": "Num row for income",
             "defval": ""
         },
         "BANKA-": {
-            "type": "text",
+            "type": "string",
             "description": "Num row for epense",
             "defval": ""
         },
         "CERT_FILE": {
-            "type": "text",
+            "type": "file-path",
             "description": "Certificate file",
             "defval": ""
         },
@@ -58,12 +58,12 @@
             "defval": ""
         },
         "IMPORT_SCOPE": {
-            "type": "text",
+            "type": "string",
             "description": "Time scope of transactions downloaded",
             "defval": "yesterday"
         },
         "STATEMENT_LINE": {
-            "type": "select",
+            "type": "set",
             "description": "Bank Statement line",
 	    "defval": "ADDITIONAL",
             "hint": "MAIN",
@@ -73,7 +73,7 @@
             }
         },
         "STATEMENT_LANGUAGE": {
-            "type": "select",
+            "type": "set",
             "description": "Request Bank Statement in given language",
 	    "defval": "en",
             "hint": "cs",
@@ -83,7 +83,7 @@
             }
         },
         "XIBMCLIENTID": {
-            "type": "text",
+            "type": "string",
             "description": "ClientID",
             "defval": ""
         },
@@ -94,7 +94,7 @@
             "required": false
         },
         "APP_DEBUG": {
-            "type": "checkbox",
+            "type": "bool",
             "description": "Show debug messages",
             "defval": "False",
             "required": true

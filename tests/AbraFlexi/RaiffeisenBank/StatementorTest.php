@@ -12,6 +12,7 @@ declare(strict_types=1);
  */
 
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Depends;
 use PHPUnit\Framework\TestCase;
 
 #[CoversClass(\AbraFlexi\RaiffeisenBank\Statementor::class)]
@@ -67,6 +68,13 @@ class StatementorTest extends TestCase
         $statements = $this->statementor->getStatements();
 
         $this->assertIsArray($statements);
+
+        // Each statement should be an array with expected keys from the converted objects
+        if (!empty($statements)) {
+            $this->assertArrayHasKey('statementId', $statements[0]);
+            $this->assertArrayHasKey('accountId', $statements[0]);
+            $this->assertArrayHasKey('statementNumber', $statements[0]);
+        }
     }
 
     /**
