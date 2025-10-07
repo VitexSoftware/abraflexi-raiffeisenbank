@@ -26,3 +26,6 @@ output.xml
 .vagrant/
 /.build/
 /composer.lock
+
+# Prevent multiflexi job environment files
+multiflexi_job_*.env
