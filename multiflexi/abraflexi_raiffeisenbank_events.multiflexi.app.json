@@ -1,77 +1,130 @@
 {
-    "image": "",
-    "name": "Import Raiffeisen bank Statements to AbraFlexi Events",
-    "description": "Download Raiffeisenbank PDF Statements and import them to AbraFlexi events",
-    "executable": "abraflexi-raiffeisenbank-events",
-    "setup": "abraflexi-raiffeisenbank-setup",
-    "cmdparams": "",
+    "$schema": "https://raw.githubusercontent.com/VitexSoftware/php-vitexsoftware-multiflexi-core/refs/heads/main/multiflexi.app.schema.json",
+    "schemaVersion": "3.0.0",
     "uuid": "a82ca72b-a142-479b-b790-12b1e1a51fd7",
-    "deploy": "apt install abraflexi-raiffeisenbank",
-    "homepage": "https:\/\/github.com\/VitexSoftware\/abraflexi-raiffeisenbank",
-    "topics": ["RaiffeisenBank", "Statements", "Events", "PDF"],
-    "requirements": ["RaiffeisenBank", "AbraFlexi"],
-    "multiflexi": "abraflexi-raiffeisenbank-events",
+    "name": {
+        "en": "Import Raiffeisen bank Statements to AbraFlexi Events",
+        "cs": "Import Raiffeisen bank Statements to AbraFlexi Events"
+    },
+    "description": {
+        "en": "Download Raiffeisenbank PDF Statements and import them to AbraFlexi events",
+        "cs": "Download Raiffeisenbank PDF Statements and import them to AbraFlexi events"
+    },
+    "tags": [
+        "RaiffeisenBank",
+        "Statements",
+        "Events",
+        "PDF"
+    ],
+    "homepage": "https://github.com/VitexSoftware/abraflexi-raiffeisenbank",
+    "image": "",
+    "executable": "abraflexi-raiffeisenbank-events",
     "environment": {
         "ABRAFLEXI_COMPANY": {
             "type": "string",
             "description": "",
-            "defval": "demo_de"
+            "defval": "demo_de",
+            "category": "API"
         },
         "ABRAFLEXI_LOGIN": {
             "type": "string",
-            "description": "AbraFlexi Login",
-            "defval": "winstrom"
+            "description": {
+                "en": "AbraFlexi Login",
+                "cs": "AbraFlexi Login"
+            },
+            "defval": "winstrom",
+            "category": "API"
         },
         "ABRAFLEXI_PASSWORD": {
-            "type": "string",
-            "description": "AbraFlexi password",
-            "defval": "winstrom"
+            "type": "password",
+            "description": {
+                "en": "AbraFlexi password",
+                "cs": "AbraFlexi password"
+            },
+            "defval": "winstrom",
+            "category": "API"
         },
         "ABRAFLEXI_URL": {
             "type": "string",
-            "description": "AbraFlexi Server URI",
-            "defval": "https:\/\/demo.flexibee.eu:5434"
+            "description": {
+                "en": "AbraFlexi Server URI",
+                "cs": "AbraFlexi Server URI"
+            },
+            "defval": "https://demo.flexibee.eu:5434",
+            "category": "API"
         },
         "ACCOUNT_NUMBER": {
             "type": "string",
-            "description": "Bank Account Number",
-            "defval": ""
+            "description": {
+                "en": "Bank Account Number",
+                "cs": "Bank Account Number"
+            },
+            "defval": "",
+            "category": "Other"
         },
         "CERT_FILE": {
             "type": "file-path",
-            "description": "Certificate file",
-            "defval": ""
+            "description": {
+                "en": "Certificate file",
+                "cs": "Certificate file"
+            },
+            "defval": "",
+            "category": "Other"
         },
         "CERT_PASS": {
             "type": "password",
-            "description": "Certificate password",
-            "defval": ""
+            "description": {
+                "en": "Certificate password",
+                "cs": "Certificate password"
+            },
+            "defval": "",
+            "category": "Other"
         },
         "IMPORT_SCOPE": {
             "type": "string",
-            "description": "Time scope of transactions downloaded",
-            "defval": "auto"
+            "description": {
+                "en": "Time scope of transactions downloaded",
+                "cs": "Time scope of transactions downloaded"
+            },
+            "defval": "auto",
+            "category": "Other"
         },
         "XIBMCLIENTID": {
             "type": "string",
-            "description": "ClientID",
-            "defval": ""
+            "description": {
+                "en": "ClientID",
+                "cs": "ClientID"
+            },
+            "defval": "",
+            "category": "Other"
         },
         "ABRAFLEXI_EVENT": {
             "type": "string",
-            "description": "AbraFlexi Event",
-            "defval": "BankStatement"
+            "description": {
+                "en": "AbraFlexi Event",
+                "cs": "AbraFlexi Event"
+            },
+            "defval": "BankStatement",
+            "category": "API"
         },
         "STATEMENT_LINE": {
             "type": "string",
-            "description": "Bank Statement line",
-            "defval": "MAIN"
+            "description": {
+                "en": "Bank Statement line",
+                "cs": "Bank Statement line"
+            },
+            "defval": "MAIN",
+            "category": "Other"
         },
         "EASE_LOGGER": {
             "type": "string",
-            "description": "write log messages using",
+            "description": {
+                "en": "write log messages using",
+                "cs": "write log messages using"
+            },
             "defval": "console|syslog",
-            "required": false
+            "required": false,
+            "category": "Behavior"
         }
     }
 }
