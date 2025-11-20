@@ -111,3 +111,9 @@ Please use the .deb packages. The repository is availble:
     sudo apt update
     sudo apt install abraflexi-raiffeisenbank
 ```
+
+## Exit Codes
+
+This application uses the following exit codes:
+
+- `0`: Success

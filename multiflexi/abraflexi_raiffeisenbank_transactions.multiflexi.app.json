@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/VitexSoftware/php-vitexsoftware-multiflexi-core/refs/heads/main/multiflexi.app.schema.json",
-    "schemaVersion": "3.0.0",
+    "schemaVersion": "3.1.0",
     "uuid": "e2d13c2f-d265-4d49-9405-2dee3030a568",
     "name": {
         "en": "Raiffeisenbank Transactions importer for AbraFlexi",
@@ -125,6 +125,16 @@
             "defval": "env_report.json",
             "required": false,
             "category": "Other"
+        }
+    },
+    "exitCodes": {
+        "0": {
+            "description": {
+                "en": "Success",
+                "cs": "Úspěch"
+            },
+            "severity": "success",
+            "retry": false
         }
     }
 }
