@@ -4,11 +4,11 @@
     "uuid": "ad1394f4-cf59-4523-a83c-020a779ccc2f",
     "name": {
         "en": "Raiffeisenbank Statement importer for AbraFlexi",
-        "cs": "Raiffeisenbank Statement importer for AbraFlexi"
+        "cs": "Importér výpisů Raiffeisenbank pro AbraFlexi"
     },
     "description": {
         "en": "Raiffeisen Bank Statements puller",
-        "cs": "Raiffeisen Bank Statements puller"
+        "cs": "Stahovač výpisů Raiffeisenbank"
     },
     "tags": [
         "RaiffeisenBank",
@@ -20,7 +20,10 @@
     "environment": {
         "ABRAFLEXI_COMPANY": {
             "type": "string",
-            "description": "",
+            "description": {
+                "en": "Company code",
+                "cs": "Kód společnosti"
+            },
             "defval": "demo_de",
             "category": "API"
         },
@@ -28,7 +31,7 @@
             "type": "string",
             "description": {
                 "en": "AbraFlexi Login",
-                "cs": "AbraFlexi Login"
+                "cs": "Přihlášení do AbraFlexi"
             },
             "defval": "winstrom",
             "category": "API"
@@ -37,7 +40,7 @@
             "type": "password",
             "description": {
                 "en": "AbraFlexi password",
-                "cs": "AbraFlexi password"
+                "cs": "Heslo do AbraFlexi"
             },
             "defval": "winstrom",
             "category": "API"
@@ -46,7 +49,7 @@
             "type": "string",
             "description": {
                 "en": "AbraFlexi Server URI",
-                "cs": "AbraFlexi Server URI"
+                "cs": "Adresa serveru AbraFlexi"
             },
             "defval": "https://demo.flexibee.eu:5434",
             "category": "API"
@@ -55,7 +58,7 @@
             "type": "string",
             "description": {
                 "en": "Bank Account Number",
-                "cs": "Bank Account Number"
+                "cs": "Číslo bankovního účtu"
             },
             "defval": "",
             "category": "Other"
@@ -64,7 +67,7 @@
             "type": "string",
             "description": {
                 "en": "Num row for income",
-                "cs": "Num row for income"
+                "cs": "Číslo řádku pro příjem"
             },
             "defval": "",
             "category": "Other"
@@ -73,7 +76,7 @@
             "type": "string",
             "description": {
                 "en": "Num row for epense",
-                "cs": "Num row for epense"
+                "cs": "Číslo řádku pro výdaj"
             },
             "defval": "",
             "category": "Other"
@@ -82,7 +85,7 @@
             "type": "file-path",
             "description": {
                 "en": "Certificate file",
-                "cs": "Certificate file"
+                "cs": "Soubor certifikátu"
             },
             "defval": "",
             "category": "Other"
@@ -91,7 +94,7 @@
             "type": "password",
             "description": {
                 "en": "Certificate password",
-                "cs": "Certificate password"
+                "cs": "Heslo certifikátu"
             },
             "defval": "",
             "category": "Other"
@@ -100,7 +103,7 @@
             "type": "string",
             "description": {
                 "en": "Time scope of transactions downloaded",
-                "cs": "Time scope of transactions downloaded"
+                "cs": "Časový rozsah stahovaných transakcí"
             },
             "defval": "yesterday",
             "category": "Other"
@@ -109,7 +112,7 @@
             "type": "set",
             "description": {
                 "en": "Bank Statement line",
-                "cs": "Bank Statement line"
+                "cs": "Řádek bankovního výpisu"
             },
             "defval": "ADDITIONAL",
             "hint": {
@@ -118,7 +121,7 @@
             },
             "options": {
                 "MAIN": "Main statement line",
-                "ADDITIONAL": "Additional statement line"
+                "ADDITIONAL": "Doplňkový řádek výpisu"
             },
             "category": "Other"
         },
@@ -126,7 +129,7 @@
             "type": "set",
             "description": {
                 "en": "Request Bank Statement in given language",
-                "cs": "Request Bank Statement in given language"
+                "cs": "Vyžádat bankovní výpis v daném jazyce"
             },
             "defval": "en",
             "hint": {
@@ -134,7 +137,7 @@
                 "cs": "cs"
             },
             "options": {
-                "cs": "Czech Language",
+                "cs": "Český jazyk",
                 "en": "English"
             },
             "category": "Other"
@@ -143,7 +146,7 @@
             "type": "string",
             "description": {
                 "en": "ClientID",
-                "cs": "ClientID"
+                "cs": "ID klienta"
             },
             "defval": "",
             "category": "Other"
@@ -152,7 +155,7 @@
             "type": "string",
             "description": {
                 "en": "write log messages using",
-                "cs": "write log messages using"
+                "cs": "Zapisovat logovací zprávy pomocí"
             },
             "defval": "console|syslog",
             "required": false,
@@ -162,7 +165,7 @@
             "type": "bool",
             "description": {
                 "en": "Show debug messages",
-                "cs": "Show debug messages"
+                "cs": "Zobrazit ladicí zprávy"
             },
             "defval": "False",
             "required": true,
@@ -172,7 +175,7 @@
             "type": "string",
             "description": {
                 "en": "write output json data to",
-                "cs": "write output json data to"
+                "cs": "Zapsat výstupní json data do"
             },
             "defval": "env_report.json",
             "required": false,

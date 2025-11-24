@@ -4,11 +4,11 @@
     "uuid": "a82ca72b-a142-479b-b790-12b1e1a51fd7",
     "name": {
         "en": "Import Raiffeisen bank Statements to AbraFlexi Events",
-        "cs": "Import Raiffeisen bank Statements to AbraFlexi Events"
+        "cs": "Import výpisů Raiffeisenbank do událostí AbraFlexi"
     },
     "description": {
         "en": "Download Raiffeisenbank PDF Statements and import them to AbraFlexi events",
-        "cs": "Download Raiffeisenbank PDF Statements and import them to AbraFlexi events"
+        "cs": "Stáhněte PDF výpisy Raiffeisenbank a importujte je do událostí AbraFlexi"
     },
     "tags": [
         "RaiffeisenBank",
@@ -30,7 +30,7 @@
             "type": "string",
             "description": {
                 "en": "AbraFlexi Login",
-                "cs": "AbraFlexi Login"
+                "cs": "Přihlášení do AbraFlexi"
             },
             "defval": "winstrom",
             "category": "API"
@@ -39,7 +39,7 @@
             "type": "password",
             "description": {
                 "en": "AbraFlexi password",
-                "cs": "AbraFlexi password"
+                "cs": "Heslo do AbraFlexi"
             },
             "defval": "winstrom",
             "category": "API"
@@ -48,7 +48,7 @@
             "type": "string",
             "description": {
                 "en": "AbraFlexi Server URI",
-                "cs": "AbraFlexi Server URI"
+                "cs": "Adresa serveru AbraFlexi"
             },
             "defval": "https://demo.flexibee.eu:5434",
             "category": "API"
@@ -57,7 +57,7 @@
             "type": "string",
             "description": {
                 "en": "Bank Account Number",
-                "cs": "Bank Account Number"
+                "cs": "Číslo bankovního účtu"
             },
             "defval": "",
             "category": "Other"
@@ -66,7 +66,7 @@
             "type": "file-path",
             "description": {
                 "en": "Certificate file",
-                "cs": "Certificate file"
+                "cs": "Soubor certifikátu"
             },
             "defval": "",
             "category": "Other"
@@ -75,7 +75,7 @@
             "type": "password",
             "description": {
                 "en": "Certificate password",
-                "cs": "Certificate password"
+                "cs": "Heslo certifikátu"
             },
             "defval": "",
             "category": "Other"
@@ -84,7 +84,7 @@
             "type": "string",
             "description": {
                 "en": "Time scope of transactions downloaded",
-                "cs": "Time scope of transactions downloaded"
+                "cs": "Časový rozsah stahovaných transakcí"
             },
             "defval": "auto",
             "category": "Other"
@@ -93,7 +93,7 @@
             "type": "string",
             "description": {
                 "en": "ClientID",
-                "cs": "ClientID"
+                "cs": "ID klienta"
             },
             "defval": "",
             "category": "Other"
@@ -102,7 +102,7 @@
             "type": "string",
             "description": {
                 "en": "AbraFlexi Event",
-                "cs": "AbraFlexi Event"
+                "cs": "Událost AbraFlexi"
             },
             "defval": "BankStatement",
             "category": "API"
@@ -111,7 +111,7 @@
             "type": "string",
             "description": {
                 "en": "Bank Statement line",
-                "cs": "Bank Statement line"
+                "cs": "Řádek bankovního výpisu"
             },
             "defval": "MAIN",
             "category": "Other"
@@ -120,7 +120,7 @@
             "type": "string",
             "description": {
                 "en": "write log messages using",
-                "cs": "write log messages using"
+                "cs": "Zapisovat logovací zprávy pomocí"
             },
             "defval": "console|syslog",
             "required": false,

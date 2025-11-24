@@ -4,11 +4,11 @@
     "uuid": "e2d13c2f-d265-4d49-9405-2dee3030a568",
     "name": {
         "en": "Raiffeisenbank Transactions importer for AbraFlexi",
-        "cs": "Raiffeisenbank Transactions importer for AbraFlexi"
+        "cs": "Importér transakcí Raiffeisenbank pro AbraFlexi"
     },
     "description": {
         "en": "Raiffeisen Bank Transaction puller",
-        "cs": "Raiffeisen Bank Transaction puller"
+        "cs": "Stahovač transakcí Raiffeisenbank"
     },
     "tags": [
         "RaiffeisenBank",
@@ -28,7 +28,7 @@
             "type": "string",
             "description": {
                 "en": "AbraFlexi Login",
-                "cs": "AbraFlexi Login"
+                "cs": "Přihlášení do AbraFlexi"
             },
             "defval": "winstrom",
             "category": "API"
@@ -37,7 +37,7 @@
             "type": "password",
             "description": {
                 "en": "AbraFlexi password",
-                "cs": "AbraFlexi password"
+                "cs": "Heslo do AbraFlexi"
             },
             "defval": "winstrom",
             "category": "API"
@@ -46,7 +46,7 @@
             "type": "string",
             "description": {
                 "en": "AbraFlexi Server URI",
-                "cs": "AbraFlexi Server URI"
+                "cs": "Adresa serveru AbraFlexi"
             },
             "defval": "https://demo.flexibee.eu:5434",
             "category": "API"
@@ -55,7 +55,7 @@
             "type": "string",
             "description": {
                 "en": "Bank Account Number",
-                "cs": "Bank Account Number"
+                "cs": "Číslo bankovního účtu"
             },
             "defval": "",
             "category": "Other"
@@ -64,7 +64,7 @@
             "type": "file-path",
             "description": {
                 "en": "Certificate file",
-                "cs": "Certificate file"
+                "cs": "Soubor certifikátu"
             },
             "defval": "",
             "category": "Other"
@@ -73,7 +73,7 @@
             "type": "password",
             "description": {
                 "en": "Certificate password",
-                "cs": "Certificate password"
+                "cs": "Heslo certifikátu"
             },
             "defval": "",
             "category": "Other"
@@ -82,7 +82,7 @@
             "type": "string",
             "description": {
                 "en": "Time scope of transactions downloaded",
-                "cs": "Time scope of transactions downloaded"
+                "cs": "Časový rozsah stahovaných transakcí"
             },
             "defval": "auto",
             "category": "Other"
@@ -91,7 +91,7 @@
             "type": "string",
             "description": {
                 "en": "ClientID",
-                "cs": "ClientID"
+                "cs": "ID klienta"
             },
             "defval": "",
             "category": "Other"
@@ -100,7 +100,7 @@
             "type": "string",
             "description": {
                 "en": "write log messages using",
-                "cs": "write log messages using"
+                "cs": "Zapisovat logovací zprávy pomocí"
             },
             "defval": "console|syslog",
             "required": false,
@@ -110,7 +110,7 @@
             "type": "bool",
             "description": {
                 "en": "Show debug messages",
-                "cs": "Show debug messages"
+                "cs": "Zobrazit ladicí zprávy"
             },
             "defval": "False",
             "required": true,
@@ -120,7 +120,7 @@
             "type": "string",
             "description": {
                 "en": "write output json data to",
-                "cs": "write output json data to"
+                "cs": "Zapsat výstupní json data do"
             },
             "defval": "env_report.json",
             "required": false,
