@@ -1,40 +1,41 @@
 {
-    "name": "vitexsoftware/abraflexi-raiffeisenbank",
-    "description": "raiffeisenbank  account statement downloader for AbraFlexi",
-    "license": "MIT",
-    "authors": [
-        {
-            "name": "Vítězslav Dvořák",
-            "email": "info@vitexsoftware.cz"
-        }
-    ],
-    "minimum-stability": "stable",
-    "require": {
-        "spojenet/flexibee": "^2025.7",
-        "vitexsoftware/rbczpremiumapi": "^1.5"
-    },
-    "autoload": {
-        "psr-4": {
-            "AbraFlexi\\": "src/AbraFlexi/",
-            "AbraFlexi\\RaiffeisenBank\\": "src/AbraFlexi/RaiffeisenBank/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "Test\\AbraFlexi\\": "vendor/spojenet/abraflexi/testing/src/AbraFlexi/",
-            "Test\\AbraFlexi\\RaiffeisenBank\\": "tests/AbraFlexi/RaiffeisenBank/"
-        }
-    },
-    "require-dev": {
-        "phpunit/phpunit": "*",
-        "phpstan/phpstan": "*",
-        "friendsofphp/php-cs-fixer": "^3.92",
-        "ergebnis/composer-normalize": "^2.48",
-        "ergebnis/php-cs-fixer-config": "^6.58"
-    },
-    "config": {
-        "allow-plugins": {
-            "ergebnis/composer-normalize": true
-        }
+  "name": "vitexsoftware/abraflexi-raiffeisenbank",
+  "description": "raiffeisenbank  account statement downloader for AbraFlexi",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Vítězslav Dvořák",
+      "email": "info@vitexsoftware.cz"
     }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "spojenet/flexibee": "^2025.7",
+    "vitexsoftware/rbczpremiumapi": "^1.5"
+  },
+  "autoload": {
+    "psr-4": {
+      "AbraFlexi\\": "src/AbraFlexi/",
+      "AbraFlexi\\RaiffeisenBank\\": "src/AbraFlexi/RaiffeisenBank/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Test\\AbraFlexi\\": "vendor/spojenet/abraflexi/testing/src/AbraFlexi/",
+      "Test\\AbraFlexi\\RaiffeisenBank\\": "tests/AbraFlexi/RaiffeisenBank/"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "*",
+    "phpstan/phpstan": "*",
+    "friendsofphp/php-cs-fixer": "^3.89",
+    "ergebnis/composer-normalize": "^2.48",
+    "ergebnis/php-cs-fixer-config": "^6.56"
+  },
+  "config": {
+    "allow-plugins": {
+      "ergebnis/composer-normalize": true
+    }
+  },
+  "type": "library"
 }
