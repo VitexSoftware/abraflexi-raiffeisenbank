@@ -10,10 +10,8 @@
     "en": "Raiffeisen Bank Statements puller",
     "cs": "Stahovač výpisů Raiffeisenbank"
   },
-  "tags": [
-    "RaiffeisenBank",
-    "Statements"
-  ],
+  "requirements": ["AbraFlexi", "RaiffeisenBank"],
+  "tags": ["RaiffeisenBank", "Statements"],
   "homepage": "https://github.com/VitexSoftware/abraflexi-raiffeisenbank",
   "image": "",
   "executable": "abraflexi-raiffeisenbank-statements",

@@ -10,12 +10,8 @@
     "en": "Download Raiffeisenbank PDF Statements and import them to AbraFlexi events",
     "cs": "Stáhněte PDF výpisy Raiffeisenbank a importujte je do událostí AbraFlexi"
   },
-  "tags": [
-    "RaiffeisenBank",
-    "Statements",
-    "Events",
-    "PDF"
-  ],
+  "requirements": ["AbraFlexi", "RaiffeisenBank"],
+  "tags": ["RaiffeisenBank", "Statements", "Events", "PDF"],
   "homepage": "https://github.com/VitexSoftware/abraflexi-raiffeisenbank",
   "image": "",
   "executable": "abraflexi-raiffeisenbank-events",
