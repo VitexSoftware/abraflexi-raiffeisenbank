@@ -6,12 +6,30 @@
 #export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
 %:
-	dh $@
+	dh $@ --with phpcomposer
+
+override_dh_auto_build:
+	# Generate custom Debian autoloader for application
+	cat > debian/autoload.php <<'AUTOLOADER'
+	<?php
+	// Debian autoloader for abraflexi-raiffeisenbank
+	require_once '/usr/share/php/AbraFlexi/autoload.php';
+	require_once '/usr/share/php/Raiffeisenbank/autoload.php';
+	// PSR-4 autoloader for application classes
+	spl_autoload_register(function (string $$class): void {
+	    if (strncmp('AbraFlexi\\RaiffeisenBank\\', $$class, 26) === 0) {
+	        $$file = '/usr/lib/abraflexi-raiffeisenbank/AbraFlexi/RaiffeisenBank/' . str_replace('\\', '/', substr($$class, 26)) . '.php';
+	        if (file_exists($$file)) { require $$file; }
+	    }
+	});
+	AUTOLOADER
 
 override_dh_install:
 	jq '.version = "'`dpkg-parsechangelog | sed -n 's/^Version: //p'| sed 's/~.*//'`'"'  debian/composer.json |sponge debian/composer.json
 	dh_install
-	sed -i "s/\.\.\/vendor/\/var\/lib\/composer\/abraflexi-raiffeisenbank/g" debian/abraflexi-raiffeisenbank/usr/lib/abraflexi-raiffeisenbank/*.php
+	# Install Debian autoloader
+	install -D -m 0644 debian/autoload.php debian/abraflexi-raiffeisenbank/usr/share/php/abraflexi-raiffeisenbank/autoload.php
+	sed -i "s/\.\.\/vendor/\/usr\/share\/php\/abraflexi-raiffeisenbank/g" debian/abraflexi-raiffeisenbank/usr/lib/abraflexi-raiffeisenbank/*.php
 	sed -i -e 's/..\/.env//'                                                 debian/abraflexi-raiffeisenbank/usr/lib/abraflexi-raiffeisenbank/*.php
 	jq '.version = "'`dpkg-parsechangelog | sed -n 's/^Version: //p'| sed 's/~.*//'`'"'  multiflexi/abraflexi_raiffeisenbank_statements.multiflexi.app.json |sponge debian/multiflexi-abraflexi-raiffeisenbank/usr/lib/abraflexi-raiffeisenbank/multiflexi/abraflexi_raiffeisenbank_statements.multiflexi.app.json
 	jq '.version = "'`dpkg-parsechangelog | sed -n 's/^Version: //p'| sed 's/~.*//'`'"'  multiflexi/abraflexi_raiffeisenbank_transactions.multiflexi.app.json |sponge debian/multiflexi-abraflexi-raiffeisenbank/usr/lib/abraflexi-raiffeisenbank/multiflexi/abraflexi_raiffeisenbank_transactions.multiflexi.app.json
