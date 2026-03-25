@@ -2,13 +2,13 @@ Source: abraflexi-raiffeisenbank
 Section: unknown
 Priority: optional
 Maintainer: Vítězslav Dvořák <info@vitexsoftware.cz>
-Build-Depends: debhelper-compat (= 12), jq, moreutils
+Build-Depends: debhelper-compat (= 12), jq, moreutils, pkg-php-tools
 Standards-Version: 4.5.0
 Homepage: https://github.com/VitexSoftware/abraflexi-raiffeisenbank
 
 Package: abraflexi-raiffeisenbank
 Architecture: all
-Depends: ${misc:Depends}, php-spojenet-abraflexi (>=3.5.2), php-vitexsoftware-rbczpremiumapi (>=1.4.1)
+Depends: ${misc:Depends}, php-spojenet-abraflexi (>=3.7), php-vitexsoftware-rbczpremiumapi (>=1.4.1)
 Suggests: abraflexi-server,abraflexi-client-config, abraflexi-digest, abraflexi-matcher, abraflexi-reminder, abraflexi-contract-invoices, multiflexi
 Description: Raiffeisen Bank Transaction puller for AbraFlexi
  Download transactions into AbraFlexi

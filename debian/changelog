@@ -1,8 +1,14 @@
-abraflexi-raiffeisenbank (1.5.0) UNRELEASED; urgency=medium
+abraflexi-raiffeisenbank (1.5.1) UNRELEASED; urgency=medium
+
+  * native debian autoloader used
+
+ -- vitex <info@vitexsoftware.cz>  Wed, 25 Mar 2026 18:26:13 +0100
+
+abraflexi-raiffeisenbank (1.5.0) unstable; urgency=medium
 
   * Statement importer fixed
 
- -- vitex <info@vitexsoftware.cz>  Fri, 06 Jun 2025 22:03:32 +0200
+ -- vitex <info@vitexsoftware.cz>  Wed, 25 Mar 2026 18:25:57 +0100
 
 abraflexi-raiffeisenbank (1.4.0) unstable; urgency=medium
 

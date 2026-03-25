@@ -1,7 +1,8 @@
-bin/*			usr/bin
-src/*.php		usr/lib/abraflexi-raiffeisenbank/
-src/AbraFlexi/*.php 	usr/share/abraflexi-raiffeisenbank/AbraFlexi
-src/AbraFlexi/RaiffeisenBank/*.php 	usr/share/abraflexi-raiffeisenbank/RaiffeisenBank
-debian/composer.json	usr/lib/abraflexi-raiffeisenbank/
-abraflexi-raiffeisenbank.svg    /usr/share/icons/hicolor/scalable/apps/
+bin/*			                    usr/bin
+src/*.php		                    usr/share/abraflexi-raiffeisenbank/
+src/AbraFlexi/RaiffeisenBank/*.php 	usr/share/php/AbraFlexi/RaiffeisenBank
+
+debian/composer.json	            usr/share/php/AbraFlexi/RaiffeisenBank
+debian/autoload.php 	            usr/share/php/AbraFlexi/RaiffeisenBank
+abraflexi-raiffeisenbank.svg        usr/share/icons/hicolor/scalable/apps/
 debian/com.vitexsoftware.abraflexi_raiffeisenbank.metainfo.xml	/usr/share/metainfo/

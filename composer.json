@@ -10,7 +10,7 @@
   ],
   "minimum-stability": "stable",
   "require": {
-    "spojenet/flexibee": "^2025.7",
+    "spojenet/flexibee": "^3.7",
     "vitexsoftware/rbczpremiumapi": "^1.5"
   },
   "autoload": {
@@ -21,16 +21,15 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Test\\AbraFlexi\\": "vendor/spojenet/abraflexi/testing/src/AbraFlexi/",
       "Test\\AbraFlexi\\RaiffeisenBank\\": "tests/AbraFlexi/RaiffeisenBank/"
     }
   },
   "require-dev": {
     "phpunit/phpunit": "*",
     "phpstan/phpstan": "*",
-    "friendsofphp/php-cs-fixer": "^3.89",
-    "ergebnis/composer-normalize": "^2.48",
-    "ergebnis/php-cs-fixer-config": "^6.56"
+    "friendsofphp/php-cs-fixer": "^3.93",
+    "ergebnis/composer-normalize": "^2.49",
+    "ergebnis/php-cs-fixer-config": "^6.59"
   },
   "config": {
     "allow-plugins": {
