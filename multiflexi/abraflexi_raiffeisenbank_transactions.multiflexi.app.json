@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/VitexSoftware/php-vitexsoftware-multiflexi-core/refs/heads/main/multiflexi.app.schema.json",
-  "schemaVersion": "3.2.1",
+  "schemaVersion": "3.4.0",
   "uuid": "e2d13c2f-d265-4d49-9405-2dee3030a568",
   "name": {
     "en": "Raiffeisenbank Transactions importer for AbraFlexi",
@@ -10,7 +10,10 @@
     "en": "Raiffeisen Bank Transaction puller",
     "cs": "Stahovač transakcí Raiffeisenbank"
   },
-  "requirements": ["AbraFlexi", "RaiffeisenBank"],
+  "requirements": [
+    "AbraFlexi",
+    "RaiffeisenBank"
+  ],
   "tags": [
     "RaiffeisenBank",
     "Transactions"
@@ -18,6 +21,19 @@
   "homepage": "https://github.com/VitexSoftware/abraflexi-raiffeisenbank",
   "image": "",
   "executable": "abraflexi-raiffeisenbank-transactions",
+  "events": {
+    "consumes": {
+      "bank.statement.downloaded": {
+        "description": "A bank statement file was downloaded",
+        "format": "file"
+      }
+    },
+    "emits": {
+      "bank.transaction.imported": {
+        "description": "Bank transactions were imported"
+      }
+    }
+  },
   "environment": {
     "ABRAFLEXI_COMPANY": {
       "type": "string",

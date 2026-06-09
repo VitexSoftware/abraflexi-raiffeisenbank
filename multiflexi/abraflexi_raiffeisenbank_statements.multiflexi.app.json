@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/VitexSoftware/php-vitexsoftware-multiflexi-core/refs/heads/main/multiflexi.app.schema.json",
-  "schemaVersion": "3.2.1",
+  "schemaVersion": "3.4.0",
   "uuid": "ad1394f4-cf59-4523-a83c-020a779ccc2f",
   "name": {
     "en": "Raiffeisenbank Statement importer for AbraFlexi",
@@ -10,11 +10,32 @@
     "en": "Raiffeisen Bank Statements puller",
     "cs": "Stahovač výpisů Raiffeisenbank"
   },
-  "requirements": ["AbraFlexi", "RaiffeisenBank"],
-  "tags": ["RaiffeisenBank", "Statements"],
+  "requirements": [
+    "AbraFlexi",
+    "RaiffeisenBank"
+  ],
+  "tags": [
+    "RaiffeisenBank",
+    "Statements"
+  ],
   "homepage": "https://github.com/VitexSoftware/abraflexi-raiffeisenbank",
   "image": "",
   "executable": "abraflexi-raiffeisenbank-statements",
+  "events": {
+    "consumes": {
+      "bank.statement.downloaded": {
+        "description": "A bank statement file was downloaded",
+        "format": "file"
+      }
+    },
+    "emits": {
+      "bank.statement.imported": {
+        "description": "A bank statement was imported into the accounting system",
+        "evidence": "banka",
+        "operation": "create"
+      }
+    }
+  },
   "environment": {
     "ABRAFLEXI_COMPANY": {
       "type": "string",
