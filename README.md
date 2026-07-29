@@ -1,4 +1,6 @@
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![Packaging: deb](https://img.shields.io/badge/packaging-.deb-red?logo=debian&logoColor=white)
 ![Logo](abraflexi-raiffeisenbank.svg?raw=true)
 
 The main purpose is to import bank transactions into the Bank agenda using two methods.
