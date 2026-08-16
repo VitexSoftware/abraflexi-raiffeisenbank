@@ -4,13 +4,17 @@
   
   <name>abraflexi-raiffeisenbank</name>
   <summary>Raiffeisen Bank Transaction puller for AbraFlexi </summary>
-  
+  <summary xml:lang="cs">Stahování transakcí z Raiffeisenbank do AbraFlexi</summary>
+
   <metadata_license>MIT</metadata_license>
   <project_license>MIT-Modern-Variant</project_license>
-  
+
   <description>
     <p>
       Prepare Bank in AbraFlexi and Import Transactions
+    </p>
+    <p xml:lang="cs">
+      Připraví banku v AbraFlexi a naimportuje transakce
     </p>
   </description>
   
