@@ -1,4 +1,4 @@
-# WARP.md - Working AI Reference for abraflexi-raiffeisenbank
+# AGENTS.md - Working AI Reference for abraflexi-raiffeisenbank
 
 ## Project Overview
 **Type**: PHP Project/Debian Package
